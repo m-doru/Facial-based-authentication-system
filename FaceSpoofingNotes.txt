@@ -1,0 +1,5 @@
+features:
+3 for specular reflection
+2 for blurriness
+15 for chromatic moment features = 5(mean, deviation, skewness, % of pixels in minimal and maximal hist bins) x 3(HSV)
+101 color diversity features
