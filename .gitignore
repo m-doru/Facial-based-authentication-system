@@ -1,0 +1,21 @@
+Face\ spoof\ detection/Implementation/*.pyc
+
+
+# Ignore directories related to openface
+Face\ spoof\ detection/Implementation/models/
+
+Face\ spoof\ detection/Implementation/openface/
+
+# Ignore videos and images
+Face\ spoof\ detection/Implementation/*.avi
+
+Face\ spoof\ detection/Implementation/*.jpg
+
+Face\ spoof\ detection/Implementation/*.jpeg
+
+Face\ spoof\ detection/Implementation/*.png
+
+Anti\ face\ spoof/
+
+
+OpenfaceImplementation
