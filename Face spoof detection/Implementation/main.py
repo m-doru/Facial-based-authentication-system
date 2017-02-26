@@ -7,6 +7,7 @@ import time
 import cv2
 
 import numpy as np
+import matplotlib.pyplot as plt
 import openface
 import features
 
@@ -38,27 +39,34 @@ def initializeParser():
                         help="Default image dimension.", default=96)
     return parser
 
+def validateFace(face, lbp):
+    cv2.imshow('face', face)
 
-def processFrame(bgrImage, args):
-    align = openface.AlignDlib(args.dlibFacePredictor)
+    greyAlignedFace = cv2.cvtColor(face, cv2.COLOR_BGR2GRAY)
 
+    hist, bins, lbpFV = lbp.compute(greyAlignedFace)
+
+    cv2.imshow('LBP', lbpFV)
+
+    print("Aligned face size {}".format(face.shape))
+
+
+def processFrame(rgbImage, align, args):
     start = time.time()
 
-    if bgrImage is None:
+    if rgbImage is None:
         raise Exception("Unable to load image/frame")
 
-    rgbImg = cv2.cvtColor(bgrImage, cv2.COLOR_BGR2RGB)
 
     if args.verbose:
-        print("  + Original size: {}".format(bgrImage.shape))
+        print("  + Original size: {}".format(rgbImage.shape))
     if args.verbose:
         print("Loading the image took {} seconds.".format(time.time() - start))
 
     start = time.time()
 
     # Get all bounding boxes
-
-    bb = align.getAllFaceBoundingBoxes(rgbImg)
+    bb = align.getAllFaceBoundingBoxes(rgbImage)
 
     if bb is None:
         return None
@@ -72,7 +80,7 @@ def processFrame(bgrImage, args):
     for box in bb:
         alignedFaces.append(align.align(
             args.imgDim,
-            rgbImg,
+            rgbImage,
             box,
             landmarkIndices=openface.AlignDlib.OUTER_EYES_AND_NOSE))
 
@@ -83,38 +91,47 @@ def processFrame(bgrImage, args):
 
     start = time.time()
 
-    lbp = features.LocalBinaryPatterns(8, 1)
+    lbp = features.LocalBinaryPatterns(8,1)
+
+    realFaces = []
 
     for alignedFace in alignedFaces:
-        cv2.imshow('face', alignedFace)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+        if validateFace(align, lbp):
+            realFaces.append(alignedFace)
+            cv2.imshow('validFace', alignedFace)
+            cv2.waitKey(0)
+        else:
+            cv2.imshow('invalidFace', alignedFace)
+            cv2.waitKey(0)
 
-    if args.verbose:
-        print("Processing aligned faces took {} seconds".format(time.time() - start))
-
+    return realFaces
 
 def main():
     parser = initializeParser()
     args = parser.parse_args()
 
 
-    video_capture = cv2.VideoCapture('output.avi')
+    video_capture = cv2.VideoCapture(0)
     video_capture.set(3, args.width)
     video_capture.set(4, args.height)
 
     frameNr = 0
+
+    align = openface.AlignDlib(args.dlibFacePredictor)
     while True:
         ret, frame = video_capture.read()
 
+        cv2.imshow('cameraFeed', frame)
         print("Processing frame number {}".format(frameNr))
         frameNr += 1
-
         if ret == False:
             print("No more input from video data source")
             break
 
-        facesWithValidation = processFrame(frame, args)
+        start = time.time()
+        facesWithValidation = processFrame(frame, align, args)
+
+        print("Entire processing of a frame took {}".format(time.time() - start))
 
     video_capture.release()
     cv2.destroyAllWindows()
