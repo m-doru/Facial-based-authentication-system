@@ -10,12 +10,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import openface
 import features
+import faceSpoofValidation
 
 fileDir = os.path.dirname(os.path.realpath(__file__))
 modelDir = os.path.join(fileDir, 'models')
 dlibModelDir = os.path.join(modelDir, 'dlib')
 openfaceModelDir = os.path.join(modelDir, 'openface')
-
 
 def initializeParser():
     parser = argparse.ArgumentParser()
@@ -37,19 +37,12 @@ def initializeParser():
 
     parser.add_argument('--imgDim', type=int,
                         help="Default image dimension.", default=96)
+
+    parser.add_argument('--scaleX', type=float, help="Scale to resize the feed image for faster processing",
+                        default=0.5)
+    parser.add_argument('--scaleY', type=float, help="Scale to resize the feed image for faster processing",
+                        default=0.5)
     return parser
-
-def validateFace(face, lbp):
-    cv2.imshow('face', face)
-
-    greyAlignedFace = cv2.cvtColor(face, cv2.COLOR_BGR2GRAY)
-
-    hist, bins, lbpFV = lbp.compute(greyAlignedFace)
-
-    cv2.imshow('LBP', lbpFV)
-
-    print("Aligned face size {}".format(face.shape))
-
 
 def processFrame(rgbImage, align, args):
     start = time.time()
@@ -63,6 +56,9 @@ def processFrame(rgbImage, align, args):
     if args.verbose:
         print("Loading the image took {} seconds.".format(time.time() - start))
 
+    originalRGBImage = rgbImage
+    rgbImage = cv2.resize(rgbImage, (0,0), args.scaleX, args.scaleY)
+
     start = time.time()
 
     # Get all bounding boxes
@@ -75,6 +71,7 @@ def processFrame(rgbImage, align, args):
 
     start = time.time()
 
+    #Get detected faces aligned
     alignedFaces = []
 
     for box in bb:
@@ -90,21 +87,18 @@ def processFrame(rgbImage, align, args):
         print("Alignment took {} seconds".format(time.time() - start))
 
     start = time.time()
-
+    # Validate each detected face
     lbp = features.LocalBinaryPatterns(8,1)
 
-    realFaces = []
+    facesWithValidation= []
 
-    for alignedFace in alignedFaces:
-        if validateFace(align, lbp):
-            realFaces.append(alignedFace)
-            cv2.imshow('validFace', alignedFace)
-            cv2.waitKey(0)
+    for i, alignedFace in enumerate(alignedFaces):
+        if faceSpoofValidation.validateFace(alignedFace, lbp):
+            facesWithValidation.append((alignedFace, 1))
         else:
-            cv2.imshow('invalidFace', alignedFace)
-            cv2.waitKey(0)
+            facesWithValidation.append((alignedFace, 0))
 
-    return realFaces
+    return facesWithValidation
 
 def main():
     parser = initializeParser()
@@ -129,7 +123,11 @@ def main():
             break
 
         start = time.time()
+
+        #Get the faces in the frame that are not spoof
         facesWithValidation = processFrame(frame, align, args)
+
+        #Process here faces having their validation
 
         print("Entire processing of a frame took {}".format(time.time() - start))
 
