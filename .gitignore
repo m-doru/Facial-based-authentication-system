@@ -17,5 +17,12 @@ Face\ spoof\ detection/Implementation/*.png
 
 Anti\ face\ spoof/
 
-
+# Ignore openface implementation
 OpenfaceImplementation
+
+# Ignore idea project file
+Face\ spoof\ detection/Implementation/.idea
+
+
+# Ignore databases
+Databases/*
