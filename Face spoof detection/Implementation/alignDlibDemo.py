@@ -3,6 +3,8 @@ import openface
 import os
 import time
 import features
+import itertools
+import numpy as np
 
 fileDir = os.path.dirname(os.path.realpath(__file__))
 modelDir = os.path.join(fileDir, 'models')
@@ -63,17 +65,27 @@ while True:
         startSift = time.time()
 
         step = 8
-        size = 16
+        size =3
+
+        print('size of redface ', redFace.shape)
+
+        redFace = redFace.astype('float32')
 
         kp, desc = dsift.compute(redFace, step, size)
+        desc = np.transpose(desc)
         print('sift took {}'.format(time.time() - startSift))
         siftFeatures.append(desc)
 
         if siftFeatures[0] is not None:
-            print('sift feature length ', len(desc[0]))
+            print('sift feature length ', len(desc)*128)
 
-        img = cv2.drawKeypoints(face, kp, cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+        cv2kp = [cv2.KeyPoint(x, y, size) for (x,y) in itertools.izip(kp[0], kp[1])]
+
+        print('face dimm', face.shape)
+
+        img = cv2.drawKeypoints(face, cv2kp, cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
         cv2.imshow('kp', img)
+        print('printed img dim', img.shape)
 
         startMLBP = time.time()
         lbpFeatures.append(mlbp.computeFeaturePatchWise(redFace))
