@@ -71,6 +71,7 @@ from vlfeat import vl_dsift
 
 class DSIFT:
     def compute(self, image, step, size):
-        kp, desc = vl_dsift(image, step = 8, size = 16, fast=True)
+        kp, desc = vl_dsift(image, step = step, size = size, fast=True)
+
 
         return kp, desc
