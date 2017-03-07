@@ -44,7 +44,7 @@ def initializeParser():
                         default=0.5)
     return parser
 
-def processFrame(rgbImage, align, args):
+def processFrame(rgbImage, align, faceSpoofValidator, args):
     start = time.time()
 
     if rgbImage is None:
@@ -57,7 +57,7 @@ def processFrame(rgbImage, align, args):
         print("Loading the image took {} seconds.".format(time.time() - start))
 
     originalRGBImage = rgbImage
-    rgbImage = cv2.resize(rgbImage, (0,0), args.scaleX, args.scaleY)
+    rgbImage = cv2.resize(rgbImage, (0,0), fx=args.scaleX, fy=args.scaleY)
 
     start = time.time()
 
@@ -93,10 +93,10 @@ def processFrame(rgbImage, align, args):
     facesWithValidation= []
 
     for i, alignedFace in enumerate(alignedFaces):
-        if faceSpoofValidation.validateFace(alignedFace, lbp):
-            facesWithValidation.append((alignedFace, 1))
+        if faceSpoofValidator.validateFace(alignedFace):
+            facesWithValidation.append((alignedFace, bb[i], 1))
         else:
-            facesWithValidation.append((alignedFace, 0))
+            facesWithValidation.append((alignedFace, bb[i], 0))
 
     return facesWithValidation
 
@@ -112,6 +112,7 @@ def main():
     frameNr = 0
 
     align = openface.AlignDlib(args.dlibFacePredictor)
+    faceSpoofValidator = faceSpoofValidation.FaceSpoofValidator(features.MultiScaleLocalBinaryPatterns())
     while True:
         ret, frame = video_capture.read()
 
@@ -125,10 +126,24 @@ def main():
         start = time.time()
 
         #Get the faces in the frame that are not spoof
-        facesWithValidation = processFrame(frame, align, args)
+        facesWithValidation = processFrame(frame, align, faceSpoofValidator, args)
 
         #Process here faces having their validation
 
+        for faceWithValidation in facesWithValidation:
+            bb = faceWithValidation[1]
+
+            ll = (int(round(bb.left()/args.scaleX)),int(round(bb.bottom()/args.scaleY)))
+            ur = (int(round(bb.right()/args.scaleX)), int(round(bb.top()/args.scaleY)))
+
+            if faceWithValidation[2] == 1:
+                cv2.rectangle(frame, ll, ur, color=(0, 255, 0),thickness=3)
+            else:
+                cv2.rectangle(frame, ll, ur, color=(0, 0, 255), thickness=3)
+
+        cv2.imshow('face', frame)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
         print("Entire processing of a frame took {}".format(time.time() - start))
 
     video_capture.release()

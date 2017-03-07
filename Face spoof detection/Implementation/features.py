@@ -1,5 +1,6 @@
-from skimage import feature
 import numpy as np
+from skimage import feature
+from vlfeat import vl_dsift
 import cv2
 
 
@@ -67,11 +68,10 @@ class MultiScaleLocalBinaryPatterns:
 
         return lbpFeature
 
-from vlfeat import vl_dsift
+
 
 class DSIFT:
     def compute(self, image, step, size):
         kp, desc = vl_dsift(image, step = step, size = size, fast=True)
-
 
         return kp, desc
