@@ -1,0 +1,6 @@
+1. Dimensiunea Multiscale Local Binary Pattern feature vector calculat de mine e mult mai mica decat cea data in paper
+2. Timpul necesar calcularii MLBP feature vector e mult prea mare la mine
+3. Lasam doar MLBP sau facem un feature fector si cu SIFT
+4. Baze de date cu face spoof - lista cu bazele de date si cu ce trebuie facut pentru a le obtine
+5. Baze de date pe categoriile pe care le-am discutat data trecuta. Trebuie facut ceva research pe asta
+
