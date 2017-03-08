@@ -1,19 +1,19 @@
-Face\ spoof\ detection/Implementation/*.pyc
+Implementation/*.pyc
 
 
 # Ignore directories related to openface
-Face\ spoof\ detection/Implementation/models/
+Implementation/models/
 
-Face\ spoof\ detection/Implementation/openface/
+Implementation/openface/
 
 # Ignore videos and images
-Face\ spoof\ detection/Implementation/*.avi
+Implementation/*.avi
 
-Face\ spoof\ detection/Implementation/*.jpg
+Implementation/*.jpg
 
-Face\ spoof\ detection/Implementation/*.jpeg
+Implementation/*.jpeg
 
-Face\ spoof\ detection/Implementation/*.png
+Implementation/*.png
 
 Anti\ face\ spoof/
 
@@ -21,7 +21,7 @@ Anti\ face\ spoof/
 OpenfaceImplementation
 
 # Ignore idea project file
-Face\ spoof\ detection/Implementation/.idea
+Implementation/.idea
 
 
 # Ignore databases
