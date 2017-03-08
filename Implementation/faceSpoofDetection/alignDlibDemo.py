@@ -29,8 +29,6 @@ while True:
         break
     start = time.time()
 
-
-
     frame = cv2.resize(origFrame,(0,0), fx=scale, fy = scale)
 
     bbs = align.getAllFaceBoundingBoxes(frame)
