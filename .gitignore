@@ -26,3 +26,9 @@ Implementation/.idea
 
 # Ignore databases
 Databases/*
+Implementation/databases/*
+
+
+# Do not upload known faces
+knownfaces/
+Implementation/data/

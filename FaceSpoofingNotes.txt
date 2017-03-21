@@ -9,13 +9,20 @@ Astea erau prezentate in primul paper, dar cel in care e prezentat sistemul pent
 Pentru a reduce numarul de imagini procesate de sistemul de anti-spoof si de cel de identificare faciala 
 cei din paperul cu smartphone au propus sa se prelucreze doar imaginile in care fetele au distanta
 inter-pupilara intr-un anumit threshold si care nu au dungi negre care apar de la mediu de display
+--asta cu distanta pupilara restrange mult aria de utilizare
 
 
-!! Tabelul 3 din articolul cu spoof face detection de pe mobil, are prezentat in tabelul 3 mai multe features cu detalii despre ele: dimensiune, timp de computare si performanta. Ei au ales Local Binary Patterns si color histogram. Sunt rapid de computat (0.013 si 0.31 secunde) au dimensiuni decente (4248 si 101) prima eficienta pentru texture analysis si a doua pentru image quality analysis 
+!! Articolul cu spoof face detection de pe mobil, are prezentat in tabelul 3 
+mai multe features cu detalii despre ele: dimensiune, timp de computare si performanta.
+Ei au ales Local Binary Patterns si color histogram. 
+Sunt rapid de computat (0.013 si 0.03 secunde) au dimensiuni decente (4248 si 101) 
+prima eficienta pentru texture analysis si a doua pentru image quality analysis 
+Obs: 0.31 secunde e un timp mult prea mare pentru un feature. Vom renunta la el.
 
-Probabil! Folosesc imagini normalizate la 144x120 pixeli, fie ea fata sau imagine intreaga
+Folosesc imagini normalizate la 144x120 pixeli, fie ea fata sau imagine intreaga
 
 
 Detectia de moire pattern realizata prin intermediul Multi scale Local Binary Patterns este utila pentru ca 
-se poate face pe intreaga imagine cu rezultate chiar mai bune decat doar pe fata si in felul asta se imbunatateste
+se poate face pe intreaga imagine (cu rezultate chiar mai bune - pe pagina unde este prezentata baza de date, nu este asa)
+decat doar pe fata si in felul asta se imbunatateste
 performanta prin respingerea frame-urilor spoof inainte de a face detectia fetei

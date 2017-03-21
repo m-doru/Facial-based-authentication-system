@@ -1,16 +1,25 @@
-aplicatie care primeste multe fps si calculeaza pulsul - pentru liveliness
+aplicatie care primeste multe fps si calculeaza pulsul - pentru liveliness -> are nevoie de un video de peste 5 secunde cu subiectul
 
+--- TO BE DONE
 filtrare pe categorii : adulti, copii
 pe sexe
 
 distiling the knowledge in a neural network
-
-
-mai multe fete in frame sa gaseasca pe ceea pe care o stie
-
-liveliness - robustete 
-
-
 antrenare retea mica sa emite comportamentul retelei mari pentru a fi transferata pe telefonul mobil
+-----------
+
+
+mai multe fete in frame sa gaseasca pe ceea pe care o stie - done
+
+liveliness - robustete  - trebuie clarificate niste aspecte in legatura cu dimensiunea feature vectorilor si apoi facut rost de baze de date
+
+
+-------------------------------
+
+Obtinerea bazelor de date si antrenarea clasificatorului de anti-spoof face
+
+
+Testarea implementarii in tensorflow a facenet-ului si a detectorului facial. 
+
 
 
