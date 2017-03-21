@@ -1,3 +1,9 @@
+import sys
+import os
+fileDir = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(os.path.join(fileDir, '..'))
+
+
 import itertools
 import os
 import time

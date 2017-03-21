@@ -1,34 +1,26 @@
 import random
-
 import cv2
-
 import features
+from sklearn.externals import joblib
 
 
 class FaceSpoofValidator:
     def __init__(self, lbp):
         self._lbp = lbp
         self._sift = features.DSIFT()
-        # Also load here the classifier
+        self.clf = joblib.load('../classifiers/casia.pkl')
 
     def validateFace(self, face):
         cv2.imshow('face', face)
 
-        greyAlignedFace = cv2.cvtColor(face, cv2.COLOR_BGR2GRAY)
+        grey_aligned_face = cv2.cvtColor(face, cv2.COLOR_BGR2GRAY)
 
-        mlbpFeature = self._lbp.computeFeaturePatchWise(greyAlignedFace)
-        dsiftFeature = self._sift.compute(greyAlignedFace, 8, 16)
+        lbp_feature = self._lbp.computeFeaturePatchWise(grey_aligned_face)
+        #dsift_feature = self._sift.compute(grey_aligned_face, 8, 16)
 
-        # featureVector = concatenation of mlbpFeature and dsiftFeature
+        feature_vector = lbp_feature
 
-        # Get the classification for featureVector
-        # and return it
-
-        #cv2.imshow('LBP', lbpFV)
-
-        print("Aligned face size {}".format(face.shape))
-
-        if random.random() > 0.2:
+        if self.clf.predict(feature_vector) == 1:
             return True
         else:
             return False

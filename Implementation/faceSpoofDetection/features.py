@@ -1,7 +1,6 @@
 import numpy as np
 from skimage import feature
 from vlfeat import vl_dsift
-import cv2
 
 
 class LocalBinaryPatterns:

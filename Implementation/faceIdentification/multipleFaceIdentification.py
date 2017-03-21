@@ -30,6 +30,8 @@ parser.add_argument('--webcam', type=int, default=0, help='Specify which camera 
                                                           '1 = usb')
 parser.add_argument('--knownFacesDir', type=str, default='../knownfaces')
 parser.add_argument('--threshold', type=float, default=1.1)
+parser.add_argument('--newKnownReps', action='store_true')
+
 args = parser.parse_args()
 
 if args.verbose:
@@ -85,9 +87,7 @@ def getNames(fullFileName):
 
     return names
 
-
-def loadKnownFaces(path):
-    startTimeLoadingKnownFaces = time.time()
+def computeKnownFacesRepresentation(path):
     knownFacesRep = []
 
     facesFiles = []
@@ -101,6 +101,8 @@ def loadKnownFaces(path):
 
     for i,facesFile in enumerate(facesFiles):
         image = cv2.imread(os.path.join(dirpath, facesFile))
+
+        image = cv2.resize(image, (0,0), fx=0.5, fy=0.5)
 
         bbs = align.getAllFaceBoundingBoxes(image)
 
@@ -130,13 +132,28 @@ def loadKnownFaces(path):
 
         knownFacesRep.append((faceRep, name))
 
-    if args.verbose:
-        print('Loading known faces representations took {}'.format(time.time() - startTimeLoadingKnownFaces))
-
 
     return knownFacesRep
 
 
+def loadKnownFaces(path):
+    startTimeLoadingKnownFaces = time.time()
+    path = os.path.join(fileDir, path)
+
+    picklePath = os.path.join(path, 'reps.pk')
+
+    if os.path.isfile(picklePath) and not args.newKnownReps:
+        with open(picklePath, 'r') as inputF:
+            knownRepresentations = np.load(inputF)
+    else:
+        knownRepresentations = computeKnownFacesRepresentation(path)
+        with open(picklePath, 'w') as outputF:
+            np.save(outputF, knownRepresentations)
+
+    if args.verbose:
+        print('Loading known faces representations took {}'.format(time.time() - startTimeLoadingKnownFaces))
+
+    return knownRepresentations
 
 def main():
     cameraFeed = cv2.VideoCapture(args.webcam)
@@ -194,17 +211,17 @@ def main():
                 d = np.dot(diff, diff)
                 if d < args.threshold:
                     cv2.rectangle(origFrame, ll, ur, color=(0,255,0),thickness=3)
-                    cv2.putText(origFrame, name, ll, cv2.FONT_HERSHEY_PLAIN, 2, color=(255,0,0), thickness=3)
+                    cv2.putText(origFrame, name, ll, cv2.FONT_HERSHEY_PLAIN, 2, color=(255,0,0), thickness=2)
                     recognized = True
                     break
 
             if recognized == False:
-                cv2.rectangle(origFrame, ll, ur, color=(0, 255, 0), thickness=3)
+                cv2.rectangle(origFrame, ll, ur, color=(0, 0, 255), thickness=3)
 
         if args.verbose:
             print('Identifying faces took {}'.format(time.time() - start))
 
-        cv2.imshow('', origFrame)
+        cv2.imshow('id', origFrame)
 
         if args.verbose:
             print('Processing a frame took {}'.format(time.time() - startFrameProcessing))

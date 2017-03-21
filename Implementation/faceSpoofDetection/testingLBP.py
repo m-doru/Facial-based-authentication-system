@@ -37,7 +37,8 @@ print(sum(diff))
 '''
 
 
-align = openface.AlignDlib("/home/doru/Desktop/Licenta/Face spoof detection/Implementation/models/dlib/shape_predictor_68_face_landmarks.dat")
+align = openface.AlignDlib("/home/doru/Desktop/Licenta/Implementation/models/dlib/shape_predictor_68_face_landmarks"
+                           ".dat")
 
 # Get all bounding boxes
 bb = align.getAllFaceBoundingBoxes(faceImg)

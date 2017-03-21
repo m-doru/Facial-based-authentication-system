@@ -1,5 +1,11 @@
 from __future__ import print_function
 
+import sys
+import os
+fileDir = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(os.path.join(fileDir, '..'))
+
+
 import time
 
 import cv2
@@ -30,7 +36,7 @@ if cv2.waitKey(0) & 0xFF == ord('q'):
     pass
 '''
 
-align = openface.AlignDlib("/home/doru/Desktop/Licenta/Face spoof detection/Implementation/models/dlib/shape_predictor_68_face_landmarks.dat")
+align = openface.AlignDlib("/home/doru/Desktop/Licenta/Implementation/models/dlib/shape_predictor_68_face_landmarks.dat")
 start = time.time()
 # Get all bounding boxes
 bb = align.getAllFaceBoundingBoxes(faceImg)
@@ -55,11 +61,11 @@ print('Detection of the face took {}'.format(time.time()-start))
 
 start = time.time()
 lbpFaceFeature = mlbp.computeFeaturePatchWise(cv2.cvtColor(alignedFaces[0], cv2.COLOR_RGB2GRAY))
-print('Computing the lbp feature of a face took {}'.format(time.time() - start))
+print('Computing the mlbp feature of a face took {}'.format(time.time() - start))
 
 start = time.time()
 lbpFeature = mlbp.computeFeaturePatchWise(cv2.cvtColor(faceImg, cv2.COLOR_RGB2GRAY))
-print('Computing the lbp feature of the entire frame took {}'.format(time.time() - start))
+print('Computing the mlbp feature of the entire frame took {}'.format(time.time() - start))
 
 dsift = features.DSIFT()
 
