@@ -95,7 +95,7 @@ while True:
         lbpFeatures.append(mlbp.computeFeaturePatchWise(redFace))
         print('mlbp took{}'.format(time.time() - startMLBP))
 
-        print('lbp features length ', len(lbpFeatures[0]))
+        print('lbp featuresVectors length ', len(lbpFeatures[0]))
 
         #img = cv2.drawKeypoints(alignedFaces[])
 

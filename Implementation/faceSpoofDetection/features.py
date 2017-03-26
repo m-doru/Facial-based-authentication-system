@@ -2,6 +2,7 @@ import numpy as np
 from skimage import feature
 from vlfeat import vl_dsift
 
+FRAME_SIZE = (144, 120)
 
 class LocalBinaryPatterns:
     def __init__(self, numPoints, radius, method='uniform'):
@@ -44,8 +45,8 @@ class MultiScaleLocalBinaryPatterns:
             for i in xrange(0, matrix.shape[0]-33, 32):
                 for j in xrange(0, matrix.shape[1] - 33, 16):
                     patch = matrix[i:i+32, j:j+32]
-                    (lbpPatchFeature, _, _) = self.lbps[lbpIndex].compute(patch)
-                    lbpFeature = lbpFeature + lbpPatchFeature.tolist()
+                    (lbp_patch_feature, _,_) = self.lbps[lbpIndex].compute(patch)
+                    lbpFeature = lbpFeature + lbp_patch_feature.tolist()
 
         return lbpFeature
 
@@ -66,6 +67,9 @@ class MultiScaleLocalBinaryPatterns:
                     lbpFeature = lbpFeature + hist.tolist()
 
         return lbpFeature
+
+    def compute(self, matrix):
+        return self.computeFeatureImageWise(matrix)
 
 
 

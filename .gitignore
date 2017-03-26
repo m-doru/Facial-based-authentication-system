@@ -1,4 +1,5 @@
 Implementation/*.pyc
+Implementation/faceSpoofDetection/*.pyc
 
 
 # Ignore directories related to openface
@@ -29,6 +30,10 @@ Databases/*
 Implementation/databases/*
 
 
-# Do not upload known faces
+# Ignore known faces
 knownfaces/
 Implementation/data/
+
+# Ignore saved classifiers and feature vectors
+Implementation/faceSpoofDetection/classifiers
+Implementation/faceSpoofDetection/featuresVectors/

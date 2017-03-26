@@ -9,7 +9,7 @@ import openface
 P = 8
 R = 1
 
-# mlbp = features.MultiScaleLocalBinaryPatterns((8,1), (24,3), (40,5))
+# mlbp = featuresVectors.MultiScaleLocalBinaryPatterns((8,1), (24,3), (40,5))
 mlbp = features.LocalBinaryPatterns(P, R, 'default')
 
 faceImg = cv2.imread('../data/face2.jpg', cv2.IMREAD_COLOR)
