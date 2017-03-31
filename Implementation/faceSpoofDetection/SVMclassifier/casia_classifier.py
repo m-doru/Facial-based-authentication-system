@@ -1,7 +1,7 @@
 import os
 
 from sklearn import svm
-from sklearn.externals import joblib
+import joblib
 from sklearn.grid_search import GridSearchCV
 from sklearn.preprocessing import label_binarize
 
@@ -85,11 +85,10 @@ test_labels_spoof = [-1 for _ in range(len(spoof_features_test))]
 
 test_features = real_features_test + spoof_features_test
 test_labels = test_labels_real + test_labels_spoof
-test_labels_bin = label_binarize(test_labels, classes=[1,-1])
+test_labels_bin = label_binarize(test_labels, classes=[-1,1])
 
 
 pred_labels = clf.predict(test_features)
-
 pred_confidences = clf.predict_proba(test_features)
 
 plot_roc_curve(test_labels_bin, pred_confidences)

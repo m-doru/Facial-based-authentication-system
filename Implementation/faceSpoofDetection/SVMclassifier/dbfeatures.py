@@ -193,10 +193,11 @@ def compute_spoofface_features_msu_ussa(feature_computer, five_fold_train,
 
     dbpath = os.path.join(dbsDir, 'MSU_USSA', 'MSU_USSA_Public', 'SpoofSubjectImages')
 
-    features = []
+    features_per_dir = []
 
     for dir in dirs:
         dirpath = os.path.join(dbpath, dir)
+        features = []
         for _, _, files in os.walk(dirpath):
             files.sort(key=lambda item:(len(item), item))
             for file in files:
@@ -215,8 +216,9 @@ def compute_spoofface_features_msu_ussa(feature_computer, five_fold_train,
                     image_features = get_frames_features(full_file_path, feature_computer)
                     features.extend(image_features)
             break
+        features_per_dir.append(features)
 
-    return features
+    return features_per_dir
 
 
 def compute_msu_ussa_subjects_folds_dict():
