@@ -12,7 +12,7 @@ saved_realfaces_features_filename = '../featuresVectors/msu_ussa_realfaces_featu
 saved_spooffaces_features_filename = '../featuresVectors/msu_ussa_spooffaces_features_joblib.pkl'
 
 # wheather to compute new features or load the features from saved files
-load = False
+load = True
 
 # descriptor computer
 mlbp_feature_computer = feature_computer.FrameFeatureComputer(features.MultiScaleLocalBinaryPatterns((8, 1), (24, 3),
@@ -22,21 +22,26 @@ mlbp_feature_computer = feature_computer.FrameFeatureComputer(features.MultiScal
 
 # compute feature vectors for every frame in the videos with real faces
 if not load:
-    real_features = dbfeatures.compute_face_features_msu_ussa(mlbp_feature_computer, real=True)
+    print("Computing features for MSU USSA spoof faces")
+    # compute feature vectors for every frame in the videos with spoof faces
+    spoof_features = dbfeatures.compute_spoofface_features_msu_ussa(mlbp_feature_computer, [1,2,3,4])
+    #with open(saved_spooffaces_features_filename, 'w') as f:
+    #    pickle.dump(spoof_features, f)
+    joblib.dump(spoof_features, saved_spooffaces_features_filename)
+
+    print("Computing features for MSU USSA real faces")
+    real_features = dbfeatures.compute_realface_features_msu_ussa(mlbp_feature_computer, [1,2,3,4])
     #with open(saved_realfaces_features_filename, 'w') as f:
         #pickle.dump(real_features, f)
     joblib.dump(real_features, saved_realfaces_features_filename)
 
-    # compute feature vectors for every frame in the videos with spoof faces
-    spoof_features = dbfeatures.compute_face_features_msu_ussa(mlbp_feature_computer, real=False)
-    #with open(saved_spooffaces_features_filename, 'w') as f:
-    #    pickle.dump(spoof_features, f)
-    joblib.dump(spoof_features, saved_spooffaces_features_filename)
 else:
+    print("Loading MSU USSA real faces features")
     #with open(saved_realfaces_features_filename, 'r') as f:
     #    real_features = pickle.load(f)
     real_features = joblib.load(saved_realfaces_features_filename)
 
+    print("Loading MSU USSA spoof faces features")
     #with open(saved_spooffaces_features_filename, 'r') as f:
     #    spoof_features = pickle.load(f)
     spoof_features = joblib.load(saved_spooffaces_features_filename)
