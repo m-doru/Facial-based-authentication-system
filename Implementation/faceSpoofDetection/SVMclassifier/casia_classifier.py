@@ -20,7 +20,7 @@ saved_realfaces_test_features_filename = '../featuresVectors/casia_realfaces_tes
 saved_spooffaces_test_features_filename ='../featuresVectors/casia_spooffaces_test_features_' + version + extension
 
 # load or recompute train features
-load_train_features = True
+load_train_features = None
 # retrain or load classifier
 load_classifier = True
 # load or recompute test features
@@ -29,7 +29,7 @@ load_test_features = True
 # descriptor computer
 mlbp_feature_computer = feature_computer.FrameFeatureComputer(features.MultiScaleLocalBinaryPatterns((8, 1), (24, 3),
                                                                                                            (40, 5)))
-if not load_train_features:
+if load_train_features == False:
     # compute feature vectors for every frame in the videos with real faces
     real_features_train = dbfeatures.compute_realface_features_casia(mlbp_feature_computer)
     joblib.dump(real_features_train, saved_realfaces_train_features_filename)
@@ -38,18 +38,18 @@ if not load_train_features:
     # compute feature vectors for every frame in the videos with spoof faces
     spoof_features_train = dbfeatures.compute_spoofface_features_casia(mlbp_feature_computer)
     joblib.dump(spoof_features_train, saved_spooffaces_train_features_filename)
-else:
+elif load_train_features == True:
     real_features_train = joblib.load(saved_realfaces_train_features_filename)
     spoof_features_train = joblib.load(saved_spooffaces_train_features_filename)
 
+if load_train_features is not None:
+    # create the necessary labels
+    labels_real = [1 for _ in range(len(real_features_train))]
+    labels_spoof = [-1 for _ in range(len(spoof_features_train))]
 
-# create the necessary labels
-labels_real = [1 for _ in range(len(real_features_train))]
-labels_spoof = [-1 for _ in range(len(spoof_features_train))]
-
-# create the full features and corresponding labels
-train_features = real_features_train + spoof_features_train
-train_labels = labels_real + labels_spoof
+    # create the full features and corresponding labels
+    train_features = real_features_train + spoof_features_train
+    train_labels = labels_real + labels_spoof
 
 if not load_classifier:
     '''
