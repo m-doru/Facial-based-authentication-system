@@ -52,12 +52,13 @@ else:
     #with open(saved_spooffaces_features_filename, 'r') as f:
     #    spoof_features = pickle.load(f)
     spoof_features_per_dir = joblib.load(saved_spooffaces_features_filename)
-    spoof_features_per_dir = np.asarray(spoof_features_per_dir)
+    spoof_features_per_dir = np.asarray([np.asarray(spoof_features_per_dir[i]) for i in range(len(
+            spoof_features_per_dir))])
 
 # create the necessary labels
 labels_real = np.asarray([1 for _ in range(len(real_features))])
 #---labels_spoof = [-1 for _ in range(len(spoof_features_per_dir))]
-labels_spoof_per_dir = np.asarray([[-1 for _ in range(len(spoof_features_per_dir[0]))] for _ in range(len(
+labels_spoof_per_dir = np.asarray([np.asarray([-1 for _ in range(len(spoof_features_per_dir[0]))]) for _ in range(len(
         spoof_features_per_dir))])
 
 # create the full features and corresponding labels
@@ -71,8 +72,8 @@ param_grid = [
         {'C': [0.0001, 0.001, 0.01], 'kernel':['rbf'],'gamma':[0.0001, 0.001], 'class_weight':['balanced', None]}
     ]
 '''
-
-ps = PredefinedSplit(test_fold=dbfeatures.compute_msu_ussa_subjects_folds_arr())
+test_fold = dbfeatures.compute_msu_ussa_subjects_folds_arr()
+ps = PredefinedSplit(test_fold=test_fold)
 
 clf = svm.SVC(verbose=True, probability=True, C=0.0001, kernel='linear', class_weight='balanced')
 
@@ -86,11 +87,10 @@ for train_index, test_index in ps:
     train_labels = labels_real[train_index]
     test_labels = labels_real[test_index]
     for i in range(len(spoof_features_per_dir)):
-        train_features = np.append(train_features, spoof_features_per_dir[i][train_index])
-        test_features = np.append(test_features, spoof_features_per_dir[i][test_index])
-        train_labels = np.append(train_labels, labels_spoof_per_dir[i][train_index])
-        test_labels = np.append(test_labels, labels_spoof_per_dir[i][test_index])
-
+        train_features = np.concatenate((train_features, spoof_features_per_dir[i][train_index]), 0)
+        test_features = np.concatenate((test_features, spoof_features_per_dir[i][test_index]),0)
+        train_labels = np.concatenate((train_labels, labels_spoof_per_dir[i][train_index]),0)
+        test_labels = np.concatenate((test_labels, labels_spoof_per_dir[i][test_index]),0)
 
     #train the classifier
     clf.fit(train_features, train_labels)

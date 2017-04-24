@@ -206,7 +206,7 @@ def compute_spoofface_features_msu_ussa(feature_computer, five_fold_train,
                 # check if current subject is part of the choisen five fold subjects division
                 crt_subject_id = file.split('.')[0]
 
-                if not crt_subject_id in subjects_fold_number:
+                if crt_subject_id not in subjects_fold_number:
                     continue
 
                 fold_number = subjects_fold_number[crt_subject_id]
@@ -222,6 +222,7 @@ def compute_spoofface_features_msu_ussa(feature_computer, five_fold_train,
 
 
 def compute_msu_ussa_subjects_folds_dict():
+    # computes a dictionary that maps the subject id to the fold he belongs
     five_fold_subject_id_path = '/home/doru/Desktop/Licenta/Implementation/databases/MSU_USSA/MSU_USSA_Public/FiveFoldSubjectID'
     subjects_id = {}
     with open(five_fold_subject_id_path, 'r') as f:
@@ -236,5 +237,7 @@ def compute_msu_ussa_subjects_folds_arr():
     with open(five_fold_subject_id_path, 'r') as f:
         for i, line in enumerate(f):
             subjects_id.append(int(line))
+            if i >= 980:
+                break
 
     return subjects_id
