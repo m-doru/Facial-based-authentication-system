@@ -36,3 +36,6 @@ Implementation/data/
 # Ignore saved classifiers and feature vectors
 Implementation/faceSpoofDetection/classifiers
 Implementation/faceSpoofDetection/featuresVectors/
+
+# Ignore all pyc files
+*.pyc

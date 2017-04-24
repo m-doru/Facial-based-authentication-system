@@ -1,0 +1,13 @@
+Am antrenat un svm cu kernel liniar, parametru de smoothing C mic, adica un smoothing mare al suprafetei de decizie
+
+! De discutat despre antrenarea pe video-uri: ar trebui sa iau fiecare frame din video si sa il folosesc pentru antrenament sau sa iau la un interval de 10 frame-uri
+
+Rezultatele intra-database sunt cam aceleasi pentru casia si pentru msu mfsd:
+- accuracy 82%
+- roc auc 88%
+
+Ce mai ramane e sa evaluez clasificatorul pe MSU USSA 
+
+Apoi sa testez inter-database si sa vad daca va creste practicabilitatea clasificatorului in viata reala
+
+Sa mai incerc si alti clasificatori, de exemplu forest tree si sa vad rezultatele
