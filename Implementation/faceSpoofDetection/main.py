@@ -101,11 +101,11 @@ def main():
     parser = initializeParser()
     args = parser.parse_args()
 
-
+    '''
     video_capture = cv2.VideoCapture('/home/doru/Desktop/Licenta/Implementation/databases/MSU_MFSD/' +
                                      'MSU-MFSD/scene01/real/real_client023_android_SD_scene01.mp4')
-
-    #video_capture = cv2.VideoCapture(0)
+    '''
+    video_capture = cv2.VideoCapture(0)
     video_capture.set(3, args.width)
     video_capture.set(4, args.height)
 
@@ -114,7 +114,7 @@ def main():
     align = openface.AlignDlib(args.dlibFacePredictor)
     faceSpoofValidator = faceSpoofValidation.FaceSpoofValidator(
             features.MultiScaleLocalBinaryPatterns((8, 1), (24, 3), (40, 5)),
-            'classifiers/msu_mfsd.pkl')
+            'classifiers/casia.pkl')
     while True:
         ret, frame = video_capture.read()
 

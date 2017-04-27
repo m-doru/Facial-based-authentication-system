@@ -7,10 +7,10 @@ import features
 import openface
 
 P = 8
-R = 1
+R = 2
 
-# mlbp = featuresVectors.MultiScaleLocalBinaryPatterns((8,1), (24,3), (40,5))
-mlbp = features.LocalBinaryPatterns(P, R, 'default')
+mlbp = features.MultiScaleLocalBinaryPatterns((8, 1), (24, 3),(40, 5))
+#mlbp = features.LocalBinaryPatterns(P, R)
 
 faceImg = cv2.imread('../data/face2.jpg', cv2.IMREAD_COLOR)
 spoofFaceImg = cv2.imread('../data/spoofFace2.jpg', cv2.IMREAD_COLOR)
@@ -72,45 +72,50 @@ for box in bbs:
 if alignedSpoofFaces is None:
         raise Exception("Unable to align the frame")
 
-grayImg = cv2.cvtColor(alignedFaces[0], cv2.COLOR_RGB2GRAY)
-#grayImg = cv2.cvtColor(faceImg, cv2.COLOR_RGB2GRAY)
-hist, bins, lbpFV = mlbp.compute(grayImg)
-bins = bins.astype('float')
-bins = bins + (bins[1] - bins[0])/2
+realImgRedChannel = alignedFaces[0][:, :, 2]
+spoofImgRedChannel = alignedSpoofFaces[0][:, :, 2]
 
-graySpoofFace = cv2.cvtColor(alignedSpoofFaces[0], cv2.COLOR_RGB2GRAY)
-#graySpoofFace = cv2.cvtColor(spoofFaceImg, cv2.COLOR_RGB2GRAY)
-histSpoof, binsSpoof, lbpFVSpoof = mlbp.compute(graySpoofFace)
-binsSpoof = binsSpoof.astype('float')
-binsSpoof = binsSpoof + (binsSpoof[1] - binsSpoof[0])/2
+if isinstance(mlbp, features.LocalBinaryPatterns):
+    hist, bins, lbpFV = mlbp.compute(realImgRedChannel)
+    bins = bins.astype('float')
+    bins = bins + (bins[1] - bins[0])/2
 
-f, ((ax1, ax2), (ax3, ax4), (ax5, ax6)) = plt.subplots(nrows=3, ncols=2, figsize=(9,6))
+    histSpoof, binsSpoof, lbpFVSpoof = mlbp.compute(spoofImgRedChannel)
+    binsSpoof = binsSpoof.astype('float')
+    binsSpoof = binsSpoof + (binsSpoof[1] - binsSpoof[0])/2
 
-ax1.imshow(alignedFaces[0])
-ax3.bar(bins[:-1], hist)
-ax5.hist(lbpFV.ravel(), normed=True)
+    f, ((ax1, ax2), (ax3, ax4), (ax5, ax6)) = plt.subplots(nrows=3, ncols=2, figsize=(9,6))
 
-
-ax2.imshow(alignedSpoofFaces[0])
-ax4.bar(binsSpoof[:-1], histSpoof)
-ax6.hist(lbpFVSpoof.ravel(), normed=True)
+    ax1.imshow(alignedFaces[0])
+    ax3.bar(bins[:-1], hist)
+    ax5.hist(lbpFV.ravel(), normed=True)
 
 
+    ax2.imshow(alignedSpoofFaces[0])
+    ax4.bar(binsSpoof[:-1], histSpoof)
+    ax6.hist(lbpFVSpoof.ravel(), normed=True)
 
-print(lbpFV.ravel().shape)
 
-plt.show()
 
-lbpFV = lbpFV.astype('uint8')
-cv2.imshow('lbp', lbpFV)
+    print(lbpFV.shape)
 
-lbpFVSpoof = lbpFVSpoof.astype('uint8')
-cv2.imshow('lbpspoof', lbpFVSpoof)
-while(1):
-    if cv2.waitKey(0) & 0xFF == ord('q'):
-        break
+    plt.show()
 
-cv2.destroyAllWindows()
+    lbpFV = lbpFV.astype('uint8')
+    cv2.imshow('lbp', lbpFV)
 
+    lbpFVSpoof = lbpFVSpoof.astype('uint8')
+    cv2.imshow('lbpspoof', lbpFVSpoof)
+    while(1):
+        if cv2.waitKey(0) & 0xFF == ord('q'):
+            break
+
+    cv2.destroyAllWindows()
+else:
+    hist = mlbp.compute(realImgRedChannel)
+    histSpoof = mlbp.compute(spoofImgRedChannel)
+
+    print(len(hist))
+    print(len(histSpoof))
 
 

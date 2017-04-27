@@ -20,27 +20,30 @@ saved_realfaces_test_features_filename = '../featuresVectors/casia_realfaces_tes
 saved_spooffaces_test_features_filename ='../featuresVectors/casia_spooffaces_test_features_' + version + extension
 
 # load or recompute train features
-load_train_features = None
+load_train_features = True
 # retrain or load classifier
 load_classifier = True
 # load or recompute test features
-load_test_features = True
+load_test_features = False
 
 # descriptor computer
-mlbp_feature_computer = feature_computer.FrameFeatureComputer(features.MultiScaleLocalBinaryPatterns((8, 1), (24, 3),
-                                                                                                           (40, 5)))
+mlbp_feature_computer = feature_computer.FrameFeatureComputer(features.MultiScaleLocalBinaryPatterns((8, 1), (8, 2),
+                                                                                                           (16, 2)))
 if load_train_features == False:
     # compute feature vectors for every frame in the videos with real faces
     real_features_train = dbfeatures.compute_realface_features_casia(mlbp_feature_computer)
+    print('Saving features of real faces')
     joblib.dump(real_features_train, saved_realfaces_train_features_filename)
 
 
     # compute feature vectors for every frame in the videos with spoof faces
     spoof_features_train = dbfeatures.compute_spoofface_features_casia(mlbp_feature_computer)
+    print('Saving features of spoof faces')
     joblib.dump(spoof_features_train, saved_spooffaces_train_features_filename)
 elif load_train_features == True:
     real_features_train = joblib.load(saved_realfaces_train_features_filename)
     spoof_features_train = joblib.load(saved_spooffaces_train_features_filename)
+    print('Loaded real and spoof faces features')
 
 if load_train_features is not None:
     # create the necessary labels
@@ -57,9 +60,12 @@ if not load_classifier:
         {'C': [0.0001, 0.001, 0.01], 'kernel':['linear'], 'class_weight':['balanced', None]},
         {'C': [0.0001, 0.001, 0.01], 'kernel':['rbf'],'gamma':[0.0001, 0.001], 'class_weight':['balanced', None]}
     ]
-    clf = GridSearchCV(svm.SVC(verbose=True, probability=True), param_grid, verbose=True)
     '''
-    clf = svm.SVC(verbose=True, probability=True, C = 0.0001, kernel='linear', class_weight='balanced')
+    param_grid = {'C':[0.0001, 0.001, 0.01], 'kernel':['rbf'], 'gamma':[0.0001, 0.001], 'class_weight':['balanced',
+                                                                                                       None]}
+    #clf = GridSearchCV(svm.SVC(verbose=True, probability=True), param_grid, verbose=True, n_jobs=4)
+    clf = svm.SVC(verbose=True, probability=True, C = 0.001, kernel='rbf', gamma=0.01)
+
     clf.fit(train_features, train_labels)
 
     #print("Best estimator found by grid search:")

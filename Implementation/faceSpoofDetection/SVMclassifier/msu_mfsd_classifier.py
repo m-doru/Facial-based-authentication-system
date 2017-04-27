@@ -3,9 +3,7 @@ import os
 from sklearn import svm
 from sklearn.grid_search import GridSearchCV
 from sklearn.preprocessing import label_binarize
-import numpy as np
 import joblib
-import matplotlib.pyplot as plt
 
 from faceSpoofDetection import features
 
@@ -22,16 +20,16 @@ saved_spooffaces_train_features_filename = '../featuresVectors/msu_mfsd_spooffac
 saved_realfaces_test_features_filename = '../featuresVectors/msu_mfsd_realfaces_test_featues.joblib' + version + extension
 saved_spooffaces_test_features_filename = '../featuresVectors/msu_mfsd_spooffaces_test_featues.joblib' + version + extension
 
-# load or recompute train features
-load_train_features = None
+# load or recompute train features. If none, the train features are not loaded into memory
+load_train_features = False
 # retrain or load classifier
-load_classifier = True
+load_classifier = False
 # load or recompute test features
-load_test_features = True
+load_test_features = False
 
 # descriptor computer
-mlbp_feature_computer = feature_computer.FrameFeatureComputer(features.MultiScaleLocalBinaryPatterns((8, 1), (24, 3),
-                                                                                                           (40, 5)))
+mlbp_feature_computer = feature_computer.FrameFeatureComputer(features.MultiScaleLocalBinaryPatterns((8,1), (8,2),
+                                                                                                     (16,2)))
 #mlbp_feature_computer = feature_computer.FrameFeatureComputer(features.LocalBinaryPatterns(8,1))
 
 if load_train_features == False:
@@ -68,7 +66,7 @@ if not load_classifier:
     clf.fit(train_features, train_labels)
 
     print("Best estimator found by grid search:")
-    print(clf.best_estimator_)
+    #print(clf.best_estimator_)
 
     joblib.dump(clf, saved_classifier_filename)
 else:
