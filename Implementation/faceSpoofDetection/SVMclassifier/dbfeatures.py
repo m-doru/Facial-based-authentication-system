@@ -36,6 +36,36 @@ def get_frames_features(video_path, feature_computer):
 
     return features
 
+def compute_face_features_idiap(feature_computer, stage='train',real=True, verbose = False):
+    if stage not in ['train', 'devel']:
+        raise Exception('Stage not a valid option. Use train or devel')
+
+    if real:
+        face_type = 'real'
+    else:
+        face_type = 'attack'
+    if verbose:
+        print('Started processing idiap {} faces database for {}'.format(face_type, stage))
+
+    dbpath = os.path.join(dbsDir, 'idiap', stage, face_type)
+
+    features = []
+
+    for _, _, files in os.walk(dbpath):
+        for file in files:
+            if verbose:
+                print('Processing file {}'.format(file))
+
+            full_file_path = os.path.join(dbpath, file)
+
+            video_features = get_frames_features(full_file_path, feature_computer)
+
+            features.extend(video_features)
+
+        break
+
+    return features
+
 
 def compute_realface_features_casia(feature_computer, train=True):
     print('Started processing casia real faces database')
