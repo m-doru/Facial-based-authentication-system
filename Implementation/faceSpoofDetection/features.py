@@ -5,10 +5,11 @@ from vlfeat import vl_dsift
 FRAME_SIZE = (144, 120)
 
 class LocalBinaryPatterns:
-    def __init__(self, numPoints, radius, method='uniform'):
+    def __init__(self, numPoints, radius, method='nri_uniform'):
         self.numPoints = numPoints
         self.radius = radius
-        self.binsRange = np.arange(0, self.numPoints+3)
+        self.binsNumber = numPoints*(numPoints-1)+3
+        self.binsRange = np.arange(0, self.binsNumber+1)
         self.method = method
 
     def compute(self, image, eps=1e-7):
@@ -20,11 +21,11 @@ class LocalBinaryPatterns:
         # In the idea that we will use Multi-scale LBP, using other method like default is not suitable given the
         # large maximum value that such a method would give. For example for P = 40
 
-        (hist, bins) = np.histogram(lbp,
+        (hist, bins) = np.histogram(lbp.ravel(),
                                     #normed=True,
                                     bins=self.binsRange,
                                     #defines the edges of the bins including the rightmost one
-                                    range=(0, self.numPoints+2)
+                                    range=(0, self.binsNumber),
                                     #defines the lower and upper range of the bins
                                     )
 
@@ -41,11 +42,11 @@ class MultiScaleLocalBinaryPatterns:
 
     def computeFeaturePatchWise(self, matrix):
         lbpFeature = []
-        for lbpIndex in range(0, len(self.lbps)):
+        for lbp in self.lbps:
             for i in xrange(0, matrix.shape[0]-33, 32):
                 for j in xrange(0, matrix.shape[1] - 33, 16):
                     patch = matrix[i:i+32, j:j+32]
-                    (lbp_patch_feature, _,_) = self.lbps[lbpIndex].compute(patch)
+                    (lbp_patch_feature, _,_) = lbp.compute(patch)
                     lbpFeature = lbpFeature + lbp_patch_feature.tolist()
 
         return lbpFeature
@@ -53,23 +54,22 @@ class MultiScaleLocalBinaryPatterns:
     def computeFeatureImageWise(self, matrix):
         lbpFeature = []
 
-        for lbpIndex in range(0, len(self.lbps)):
-            lbp = self.lbps[lbpIndex]
+        for lbp in self.lbps:
             (_, _, lbpRep) = lbp.compute(matrix)
 
             for i in xrange(0, lbpRep.shape[0]-33, 32):
                 for j in xrange(0, lbpRep.shape[1]-33, 16):
                     patch = lbpRep[i:i+32, j:j+32]
                     (hist, _) = np.histogram(patch,
-                                             #normed=True,
+                                             normed=True,
                                              bins=lbp.binsRange,
-                                             range = (0, lbp.numPoints+2))
+                                             range = (0, lbp.binsNumber))
                     lbpFeature = lbpFeature + hist.tolist()
 
         return lbpFeature
 
     def compute(self, matrix):
-        return self.computeFeatureImageWise(matrix)
+        return self.computeFeaturePatchWise(matrix)
 
 
 
