@@ -17,17 +17,20 @@ saved_classifier_filename = '../classifiers/msu_mfsd.pkl'
 saved_realfaces_features_filename = '../featuresVectors/msu_ussa_realfaces_features_joblib.pkl'
 saved_spooffaces_features_filename = '../featuresVectors/msu_ussa_spooffaces_features_joblib.pkl'
 
-# wheather to compute new features or load the features from saved files
-load = True
-
+# load or recompute train features. If none, the train features are not loaded into memory
+load_train_features = True
+# retrain or load classifier
+load_classifier = False
+# load or recompute test features
+load_test_features = False
 # descriptor computer
-mlbp_feature_computer = feature_computer.FrameFeatureComputer(features.MultiScaleLocalBinaryPatterns((8, 1), (24, 3),
-                                                                                                    (40, 5)))
+
+mlbp_feature_computer = feature_computer.FrameFeatureComputer(features.MultiScaleLocalBinaryPatterns((8,2)))
 #mlbp_feature_computer = feature_computer.FrameFeatureComputer(features.LocalBinaryPatterns(8,1))
 
 
 # compute feature vectors for every frame in the videos with real faces
-if not load:
+if load_train_features == False:
     print("Computing features for MSU USSA spoof faces")
     # copute feature vectors for every frame in the videos with spoof faces
     spoof_features_per_dir = dbfeatures.compute_spoofface_features_msu_ussa(mlbp_feature_computer, [1, 2, 3, 4, 5])
@@ -41,7 +44,7 @@ if not load:
         #pickle.dump(real_features, f)
     joblib.dump(real_features, saved_realfaces_features_filename)
 
-else:
+elif load_train_features == True:
     print("Loading MSU USSA real faces features")
     #with open(saved_realfaces_features_filename, 'r') as f:
     #    real_features = pickle.load(f)
@@ -55,11 +58,12 @@ else:
     spoof_features_per_dir = np.asarray([np.asarray(spoof_features_per_dir[i]) for i in range(len(
             spoof_features_per_dir))])
 
-# create the necessary labels
-labels_real = np.asarray([1 for _ in range(len(real_features))])
-#---labels_spoof = [-1 for _ in range(len(spoof_features_per_dir))]
-labels_spoof_per_dir = np.asarray([np.asarray([-1 for _ in range(len(spoof_features_per_dir[0]))]) for _ in range(len(
-        spoof_features_per_dir))])
+if load_train_features is not None:
+    # create the necessary labels
+    labels_real = np.asarray([1 for _ in range(len(real_features))])
+    #---labels_spoof = [-1 for _ in range(len(spoof_features_per_dir))]
+    labels_spoof_per_dir = np.asarray([np.asarray([-1 for _ in range(len(spoof_features_per_dir[0]))]) for _ in range(len(
+            spoof_features_per_dir))])
 
 # create the full features and corresponding labels
 #features = np.asarray(real_features + spoof_features)

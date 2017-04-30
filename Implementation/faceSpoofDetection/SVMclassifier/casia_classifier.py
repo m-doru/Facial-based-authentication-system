@@ -24,7 +24,7 @@ load_train_features = True
 # retrain or load classifier
 load_classifier = True
 # load or recompute test features
-load_test_features = False
+load_test_features = True
 
 # descriptor computer
 mlbp_feature_computer = feature_computer.FrameFeatureComputer(features.MultiScaleLocalBinaryPatterns((8, 1), (8, 2),
@@ -64,7 +64,7 @@ if not load_classifier:
     param_grid = {'C':[0.0001, 0.001, 0.01], 'kernel':['rbf'], 'gamma':[0.0001, 0.001], 'class_weight':['balanced',
                                                                                                        None]}
     #clf = GridSearchCV(svm.SVC(verbose=True, probability=True), param_grid, verbose=True, n_jobs=4)
-    clf = svm.SVC(verbose=True, probability=True, C = 0.001, kernel='rbf', gamma=0.01)
+    clf = svm.SVC(verbose=True, probability=True, C = 0.001, kernel='linear', class_weight='balanced')
 
     clf.fit(train_features, train_labels)
 

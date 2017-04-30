@@ -50,17 +50,23 @@ def compute_face_features_idiap(feature_computer, stage='train',real=True, verbo
     dbpath = os.path.join(dbsDir, 'idiap', stage, face_type)
 
     features = []
+    # when processing the attack files, I forgot that there are 2 aditional directories: fixed and hand
+    for _, dirs, _ in os.walk(dbpath):
+        if len(dirs) == 0:
+            dirs.append("")
+        for dir in dirs:
+            path = os.path.join(dbpath, dir)
+            for _, _, files in os.walk(path):
+                for file in files:
+                    filepath = os.path.join(dbpath, dir, file)
+                    if verbose:
+                        print('Processing file {}'.format(filepath))
 
-    for _, _, files in os.walk(dbpath):
-        for file in files:
-            if verbose:
-                print('Processing file {}'.format(file))
+                    full_file_path = os.path.join(dbpath, filepath)
 
-            full_file_path = os.path.join(dbpath, file)
+                    video_features = get_frames_features(full_file_path, feature_computer)
 
-            video_features = get_frames_features(full_file_path, feature_computer)
-
-            features.extend(video_features)
+                    features.extend(video_features)
 
         break
 
