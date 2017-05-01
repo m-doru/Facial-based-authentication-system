@@ -14,16 +14,64 @@ from plot_roc_curve import plot_roc_curve
 # pickels filenames
 extension = '.pkl'
 version = 'redchannel'
+
+def get_train_features_and_labels(load_train_features):
+    saved_realfaces_train_features_filename = '../featuresVectors/msu_mfsd_realfaces_features_joblib' + version + extension
+    saved_spooffaces_train_features_filename = '../featuresVectors/msu_mfsd_spooffaces_features_joblib' + version + extension
+
+
+    if load_train_features == False:
+        # compute feature vectors for every frame in the videos with real faces
+        real_features_train = dbfeatures.compute_face_features_msu_mfsd(mlbp_feature_computer, real=True)
+        joblib.dump(real_features_train, saved_realfaces_train_features_filename)
+
+        # compute feature vectors for every frame in the videos with spoof faces
+        spoof_features_train = dbfeatures.compute_face_features_msu_mfsd(mlbp_feature_computer, real=False)
+        joblib.dump(spoof_features_train, saved_spooffaces_train_features_filename)
+    elif load_train_features == True:
+        real_features_train = joblib.load(saved_realfaces_train_features_filename)
+        spoof_features_train = joblib.load(saved_spooffaces_train_features_filename)
+
+    # create the necessary labels
+    if load_train_features is not None:
+        train_labels_real = [1 for _ in range(len(real_features_train))]
+        train_labels_spoof = [-1 for _ in range(len(spoof_features_train))]
+
+    # create the full features and corresponding labels
+    train_features = real_features_train + spoof_features_train
+    train_labels = train_labels_real + train_labels_spoof
+
+    return (train_features, train_labels)
+
+def get_test_features_and_labels(load_test_features):
+    saved_realfaces_test_features_filename = '../featuresVectors/msu_mfsd_realfaces_test_featues.joblib' + version + extension
+    saved_spooffaces_test_features_filename = '../featuresVectors/msu_mfsd_spooffaces_test_featues.joblib' + version + extension
+
+    if load_test_features == False:
+        real_features_test = dbfeatures.compute_face_features_msu_mfsd(mlbp_feature_computer,train=False)
+        joblib.dump(real_features_test,saved_realfaces_test_features_filename)
+
+        spoof_features_test = dbfeatures.compute_face_features_msu_mfsd(mlbp_feature_computer, real=False, train=False)
+        joblib.dump(spoof_features_test, saved_spooffaces_test_features_filename)
+    elif load_test_features == True:
+        real_features_test = joblib.load(saved_realfaces_test_features_filename)
+        spoof_features_test = joblib.load(saved_spooffaces_test_features_filename)
+
+    test_labels_real = [1 for _ in range(len(real_features_test))]
+    test_labels_spoof = [-1 for _ in range(len(spoof_features_test))]
+
+    test_features = real_features_test + spoof_features_test
+    test_labels = test_labels_real + test_labels_spoof
+
+    return (test_features, test_labels)
+
+
 saved_classifier_filename = '../classifiers/msu_mfsd' + version + extension
-saved_realfaces_train_features_filename = '../featuresVectors/msu_mfsd_realfaces_features_joblib' + version + extension
-saved_spooffaces_train_features_filename = '../featuresVectors/msu_mfsd_spooffaces_features_joblib' + version + extension
-saved_realfaces_test_features_filename = '../featuresVectors/msu_mfsd_realfaces_test_featues.joblib' + version + extension
-saved_spooffaces_test_features_filename = '../featuresVectors/msu_mfsd_spooffaces_test_featues.joblib' + version + extension
 
 # load or recompute train features. If none, the train features are not loaded into memory
 load_train_features = True
 # retrain or load classifier
-load_classifier = False
+load_classifier = True
 # load or recompute test features
 load_test_features = True
 
@@ -32,26 +80,7 @@ mlbp_feature_computer = feature_computer.FrameFeatureComputer(features.MultiScal
                                                                                                      (16, 1), (16,2)))
 #mlbp_feature_computer = feature_computer.FrameFeatureComputer(features.LocalBinaryPatterns(8,1))
 
-if load_train_features == False:
-    # compute feature vectors for every frame in the videos with real faces
-    real_features_train = dbfeatures.compute_face_features_msu_mfsd(mlbp_feature_computer, real=True)
-    joblib.dump(real_features_train, saved_realfaces_train_features_filename)
-
-    # compute feature vectors for every frame in the videos with spoof faces
-    spoof_features_train = dbfeatures.compute_face_features_msu_mfsd(mlbp_feature_computer, real=False)
-    joblib.dump(spoof_features_train, saved_spooffaces_train_features_filename)
-elif load_train_features == True:
-    real_features_train = joblib.load(saved_realfaces_train_features_filename)
-    spoof_features_train = joblib.load(saved_spooffaces_train_features_filename)
-
-# create the necessary labels
-if load_train_features is not None:
-    train_labels_real = [1 for _ in range(len(real_features_train))]
-    train_labels_spoof = [-1 for _ in range(len(spoof_features_train))]
-
-    # create the full features and corresponding labels
-    train_features = real_features_train + spoof_features_train
-    train_labels = train_labels_real + train_labels_spoof
+(train_features, train_labels) = get_train_features_and_labels(load_train_features)
 
 if not load_classifier:
     '''
@@ -62,10 +91,12 @@ if not load_classifier:
     # C = 0.0001, kernel=linear, class_weight=balanced
     clf = GridSearchCV(svm.SVC(verbose=True, probability=True), param_grid, verbose=True)
     '''
-    clf = svm.SVC(verbose=True, probability=True, C=0.0001, kernel='linear', class_weight='balanced')
+    #clf = svm.SVC(verbose=True, probability=True, C=0.0001, kernel='linear', class_weight='balanced')
+    clf = svm.SVC(verbose=True, probability=True, C=0.001, kernel='rbf', gamma=0.01, class_weight='balanced')
+
     clf.fit(train_features, train_labels)
 
-    print("Best estimator found by grid search:")
+    #print("Best estimator found by grid search:")
     #print(clf.best_estimator_)
 
     joblib.dump(clf, saved_classifier_filename)
@@ -73,21 +104,7 @@ else:
     clf = joblib.load(saved_classifier_filename)
 
 
-if load_test_features == False:
-    real_features_test = dbfeatures.compute_face_features_msu_mfsd(mlbp_feature_computer,train=False)
-    joblib.dump(real_features_test,saved_realfaces_test_features_filename)
-
-    spoof_features_test = dbfeatures.compute_face_features_msu_mfsd(mlbp_feature_computer, real=False, train=False)
-    joblib.dump(spoof_features_test, saved_spooffaces_test_features_filename)
-elif load_test_features == True:
-    real_features_test = joblib.load(saved_realfaces_test_features_filename)
-    spoof_features_test = joblib.load(saved_spooffaces_test_features_filename)
-
-test_labels_real = [1 for _ in range(len(real_features_test))]
-test_labels_spoof = [-1 for _ in range(len(spoof_features_test))]
-
-test_features = real_features_test + spoof_features_test
-test_labels = test_labels_real + test_labels_spoof
+(test_features, test_labels) = get_test_features_and_labels(load_test_features)
 test_labels_bin = label_binarize(test_labels, classes=[-1,1])
 
 pred_labels = clf.predict(test_features)

@@ -12,10 +12,49 @@ from faceSpoofDetection import features
 import dbfeatures
 import feature_computer
 
+def get_features_and_labels(load_train_features):
+    saved_realfaces_features_filename = '../featuresVectors/msu_ussa_realfaces_features_joblib.pkl'
+    saved_spooffaces_features_filename = '../featuresVectors/msu_ussa_spooffaces_features_joblib.pkl'
+
+    if load_train_features == False:
+        print("Computing features for MSU USSA spoof faces")
+        # copute feature vectors for every frame in the videos with spoof faces
+        spoof_features_per_dir = dbfeatures.compute_spoofface_features_msu_ussa(mlbp_feature_computer, [1, 2, 3, 4, 5])
+        #with open(saved_spooffaces_features_filename, 'w') as f:
+        #    pickle.dump(spoof_features, f)
+        joblib.dump(spoof_features_per_dir, saved_spooffaces_features_filename)
+
+        print("Computing features for MSU USSA real faces")
+        real_features = dbfeatures.compute_realface_features_msu_ussa(mlbp_feature_computer, [1,2,3,4,5])
+        #with open(saved_realfaces_features_filename, 'w') as f:
+        #pickle.dump(real_features, f)
+        joblib.dump(real_features, saved_realfaces_features_filename)
+
+    elif load_train_features == True:
+        print("Loading MSU USSA real faces features")
+        #with open(saved_realfaces_features_filename, 'r') as f:
+        #    real_features = pickle.load(f)
+        real_features = joblib.load(saved_realfaces_features_filename)
+        real_features = np.asarray(real_features)
+
+        print("Loading MSU USSA spoof faces features")
+        #with open(saved_spooffaces_features_filename, 'r') as f:
+        #    spoof_features = pickle.load(f)
+        spoof_features_per_dir = joblib.load(saved_spooffaces_features_filename)
+        spoof_features_per_dir = np.asarray([np.asarray(spoof_features_per_dir[i]) for i in range(len(
+            spoof_features_per_dir))])
+
+    if load_train_features is not None:
+        # create the necessary labels
+        labels_real = np.asarray([1 for _ in range(len(real_features))])
+        #---labels_spoof = [-1 for _ in range(len(spoof_features_per_dir))]
+        labels_spoof_per_dir = np.asarray([np.asarray([-1 for _ in range(len(spoof_features_per_dir[0]))]) for _ in range(len(
+            spoof_features_per_dir))])
+
+        return (real_features, spoof_features_per_dir, labels_real, labels_spoof_per_dir)
+
 # pickels filenames
 saved_classifier_filename = '../classifiers/msu_mfsd.pkl'
-saved_realfaces_features_filename = '../featuresVectors/msu_ussa_realfaces_features_joblib.pkl'
-saved_spooffaces_features_filename = '../featuresVectors/msu_ussa_spooffaces_features_joblib.pkl'
 
 # load or recompute train features. If none, the train features are not loaded into memory
 load_train_features = True
@@ -28,46 +67,7 @@ load_test_features = False
 mlbp_feature_computer = feature_computer.FrameFeatureComputer(features.MultiScaleLocalBinaryPatterns((8,2)))
 #mlbp_feature_computer = feature_computer.FrameFeatureComputer(features.LocalBinaryPatterns(8,1))
 
-
-# compute feature vectors for every frame in the videos with real faces
-if load_train_features == False:
-    print("Computing features for MSU USSA spoof faces")
-    # copute feature vectors for every frame in the videos with spoof faces
-    spoof_features_per_dir = dbfeatures.compute_spoofface_features_msu_ussa(mlbp_feature_computer, [1, 2, 3, 4, 5])
-    #with open(saved_spooffaces_features_filename, 'w') as f:
-    #    pickle.dump(spoof_features, f)
-    joblib.dump(spoof_features_per_dir, saved_spooffaces_features_filename)
-
-    print("Computing features for MSU USSA real faces")
-    real_features = dbfeatures.compute_realface_features_msu_ussa(mlbp_feature_computer, [1,2,3,4,5])
-    #with open(saved_realfaces_features_filename, 'w') as f:
-        #pickle.dump(real_features, f)
-    joblib.dump(real_features, saved_realfaces_features_filename)
-
-elif load_train_features == True:
-    print("Loading MSU USSA real faces features")
-    #with open(saved_realfaces_features_filename, 'r') as f:
-    #    real_features = pickle.load(f)
-    real_features = joblib.load(saved_realfaces_features_filename)
-    real_features = np.asarray(real_features)
-
-    print("Loading MSU USSA spoof faces features")
-    #with open(saved_spooffaces_features_filename, 'r') as f:
-    #    spoof_features = pickle.load(f)
-    spoof_features_per_dir = joblib.load(saved_spooffaces_features_filename)
-    spoof_features_per_dir = np.asarray([np.asarray(spoof_features_per_dir[i]) for i in range(len(
-            spoof_features_per_dir))])
-
-if load_train_features is not None:
-    # create the necessary labels
-    labels_real = np.asarray([1 for _ in range(len(real_features))])
-    #---labels_spoof = [-1 for _ in range(len(spoof_features_per_dir))]
-    labels_spoof_per_dir = np.asarray([np.asarray([-1 for _ in range(len(spoof_features_per_dir[0]))]) for _ in range(len(
-            spoof_features_per_dir))])
-
-# create the full features and corresponding labels
-#features = np.asarray(real_features + spoof_features)
-#---labels = np.asarray(labels_real + labels_spoof)
+(real_features, spoof_features_per_dir, labels_real, labels_spoof_per_dir) = get_features_and_labels(load_train_features)
 
 # here I should do a cross validation on the features
 '''

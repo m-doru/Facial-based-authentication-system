@@ -13,11 +13,61 @@ from faceSpoofDetection import features
 # pickels filenames
 extension = '.pkl'
 version = 'redchannel'
+
+def get_train_features_and_labels(load_train_features):
+    saved_realfaces_train_features_filename = '../featuresVectors/casia_realfaces_features_' + version + extension
+    saved_spooffaces_train_features_filename = '../featuresVectors/casia_spooffaces_features_' + version + extension
+
+    if load_train_features == False:
+        # compute feature vectors for every frame in the videos with real faces
+        real_features_train = dbfeatures.compute_realface_features_casia(mlbp_feature_computer)
+        print('Saving features of real faces')
+        joblib.dump(real_features_train, saved_realfaces_train_features_filename)
+
+
+        # compute feature vectors for every frame in the videos with spoof faces
+        spoof_features_train = dbfeatures.compute_spoofface_features_casia(mlbp_feature_computer)
+        print('Saving features of spoof faces')
+        joblib.dump(spoof_features_train, saved_spooffaces_train_features_filename)
+    elif load_train_features == True:
+        real_features_train = joblib.load(saved_realfaces_train_features_filename)
+        spoof_features_train = joblib.load(saved_spooffaces_train_features_filename)
+        print('Loaded real and spoof faces features')
+
+    if load_train_features is not None:
+        # create the necessary labels
+        labels_real = [1 for _ in range(len(real_features_train))]
+        labels_spoof = [-1 for _ in range(len(spoof_features_train))]
+
+        # create the full features and corresponding labels
+        train_features = real_features_train + spoof_features_train
+        train_labels = labels_real + labels_spoof
+
+    return (train_features, train_labels)
+
+def get_test_features_and_labels(load_test_features):
+    saved_realfaces_test_features_filename = '../featuresVectors/casia_realfaces_test_features_' + version + extension
+    saved_spooffaces_test_features_filename ='../featuresVectors/casia_spooffaces_test_features_' + version + extension
+
+    if not load_test_features:
+        real_features_test = dbfeatures.compute_realface_features_casia(mlbp_feature_computer,train=False)
+        joblib.dump(real_features_test,saved_realfaces_test_features_filename)
+
+        spoof_features_test = dbfeatures.compute_spoofface_features_casia(mlbp_feature_computer, train=False)
+        joblib.dump(spoof_features_test, saved_spooffaces_test_features_filename)
+    else:
+        real_features_test = joblib.load(saved_realfaces_test_features_filename)
+        spoof_features_test = joblib.load(saved_spooffaces_test_features_filename)
+
+    test_labels_real = [1 for _ in range(len(real_features_test))]
+    test_labels_spoof = [-1 for _ in range(len(spoof_features_test))]
+
+    test_features = real_features_test + spoof_features_test
+    test_labels = test_labels_real + test_labels_spoof
+
+    return (test_features, test_labels)
+
 saved_classifier_filename = '../classifiers/casia.pkl'
-saved_realfaces_train_features_filename = '../featuresVectors/casia_realfaces_features_' + version + extension
-saved_spooffaces_train_features_filename = '../featuresVectors/casia_spooffaces_features_' + version + extension
-saved_realfaces_test_features_filename = '../featuresVectors/casia_realfaces_test_features_' + version + extension
-saved_spooffaces_test_features_filename ='../featuresVectors/casia_spooffaces_test_features_' + version + extension
 
 # load or recompute train features
 load_train_features = True
@@ -29,30 +79,7 @@ load_test_features = True
 # descriptor computer
 mlbp_feature_computer = feature_computer.FrameFeatureComputer(features.MultiScaleLocalBinaryPatterns((8, 1), (8, 2),
                                                                                                            (16, 2)))
-if load_train_features == False:
-    # compute feature vectors for every frame in the videos with real faces
-    real_features_train = dbfeatures.compute_realface_features_casia(mlbp_feature_computer)
-    print('Saving features of real faces')
-    joblib.dump(real_features_train, saved_realfaces_train_features_filename)
-
-
-    # compute feature vectors for every frame in the videos with spoof faces
-    spoof_features_train = dbfeatures.compute_spoofface_features_casia(mlbp_feature_computer)
-    print('Saving features of spoof faces')
-    joblib.dump(spoof_features_train, saved_spooffaces_train_features_filename)
-elif load_train_features == True:
-    real_features_train = joblib.load(saved_realfaces_train_features_filename)
-    spoof_features_train = joblib.load(saved_spooffaces_train_features_filename)
-    print('Loaded real and spoof faces features')
-
-if load_train_features is not None:
-    # create the necessary labels
-    labels_real = [1 for _ in range(len(real_features_train))]
-    labels_spoof = [-1 for _ in range(len(spoof_features_train))]
-
-    # create the full features and corresponding labels
-    train_features = real_features_train + spoof_features_train
-    train_labels = labels_real + labels_spoof
+(train_features, train_labels) = get_train_features_and_labels(load_train_features)
 
 if not load_classifier:
     '''
@@ -76,21 +103,7 @@ else:
     clf = joblib.load(saved_classifier_filename)
 
 
-if not load_test_features:
-    real_features_test = dbfeatures.compute_realface_features_casia(mlbp_feature_computer,train=False)
-    joblib.dump(real_features_test,saved_realfaces_test_features_filename)
-
-    spoof_features_test = dbfeatures.compute_spoofface_features_casia(mlbp_feature_computer, train=False)
-    joblib.dump(spoof_features_test, saved_spooffaces_test_features_filename)
-else:
-    real_features_test = joblib.load(saved_realfaces_test_features_filename)
-    spoof_features_test = joblib.load(saved_spooffaces_test_features_filename)
-
-test_labels_real = [1 for _ in range(len(real_features_test))]
-test_labels_spoof = [-1 for _ in range(len(spoof_features_test))]
-
-test_features = real_features_test + spoof_features_test
-test_labels = test_labels_real + test_labels_spoof
+(test_features, test_labels) = get_test_features_and_labels(load_test_features)
 test_labels_bin = label_binarize(test_labels, classes=[-1,1])
 
 
