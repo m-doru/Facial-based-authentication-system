@@ -11,3 +11,13 @@ Ce mai ramane e sa evaluez clasificatorul pe MSU USSA
 Apoi sa testez inter-database si sa vad daca va creste practicabilitatea clasificatorului in viata reala
 
 Sa mai incerc si alti clasificatori, de exemplu forest tree si sa vad rezultatele
+
+---------------------------------------------------------------------
+Am schimbat descriptorul lbp din uniform rotation invariant, in non-rotation invariant. 
+
+Aparent, in framework-ul skimage lbp uniform este rotation invariant in timp ce pentru a folosi versiunea nri trebuie specificat explicit asta.
+
+Schimbarea clasificatorului a crescut dimensiunea feature-vectorului mlbp la 7581 ceea ce a dus si la cresterea performantei.
+Accuracy undeva la 88% poate mai mult in functie de baza de date
+
+Am testat performanta in cazul interdatabase si rezultatele sunt dezamagitoare, undeva la ~60%
