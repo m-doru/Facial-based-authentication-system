@@ -64,63 +64,66 @@ def get_test_features_and_labels(load_test_features):
 
     return (test_features, test_labels)
 
-saved_classifier_filename = '../classifiers/idiap.pkl'
+def main():
+    saved_classifier_filename = '../classifiers/idiap.pkl'
 
-# load or recompute train features. If none, the train features are not loaded into memory
-load_train_features = True
-# retrain or load classifier
-load_classifier = False
-# load or recompute test features
-load_test_features = True
+    # load or recompute train features. If none, the train features are not loaded into memory
+    load_train_features = True
+    # retrain or load classifier
+    load_classifier = False
+    # load or recompute test features
+    load_test_features = True
 
-# descriptor computer
-mlbp_feature_computer = feature_computer.FrameFeatureComputer(features.MultiScaleLocalBinaryPatterns((8,1), (8,2),
-                                                                                                     (16,2)))
+    # descriptor computer
+    mlbp_feature_computer = feature_computer.FrameFeatureComputer(features.MultiScaleLocalBinaryPatterns((8,1), (8,2),
+                                                                                                         (16,2)))
 
-(train_features, train_labels) = get_train_features_and_labels(load_train_features)
+    (train_features, train_labels) = get_train_features_and_labels(load_train_features)
 
-if not load_classifier:
-    '''
-    param_grid = [
-        {'C':[0.0001, 0.001, 0.01], 'kernel':['linear'], 'class_weight':['balanced', None]},
-        {'C':[0.0001, 0.001, 0.01], 'kernel':['rbf'],'gamma':[0.0001, 0.001], 'class_weight':['balanced', None]}
-    ]
-    # C = 0.0001, kernel=linear, class_weight=balanced
-    clf = GridSearchCV(svm.SVC(verbose=True, probability=True), param_grid, verbose=True)
-    '''
-    #clf = svm.SVC(verbose=True, probability=True, C=0.0001, kernel='linear', class_weight='balanced')
-    clf = svm.SVC(verbose=True, probability=True, C=0.0001, kernel='rbf', gamma=0.001, class_weight='balanced')
-    clf.fit(train_features, train_labels)
+    if not load_classifier:
+        '''
+        param_grid = [
+            {'C':[0.0001, 0.001, 0.01], 'kernel':['linear'], 'class_weight':['balanced', None]},
+            {'C':[0.0001, 0.001, 0.01], 'kernel':['rbf'],'gamma':[0.0001, 0.001], 'class_weight':['balanced', None]}
+        ]
+        # C = 0.0001, kernel=linear, class_weight=balanced
+        clf = GridSearchCV(svm.SVC(verbose=True, probability=True), param_grid, verbose=True)
+        '''
+        #clf = svm.SVC(verbose=True, probability=True, C=0.0001, kernel='linear', class_weight='balanced')
+        clf = svm.SVC(verbose=True, probability=True, C=0.0001, kernel='rbf', gamma=0.001, class_weight='balanced')
+        clf.fit(train_features, train_labels)
 
-    #print("Best estimator found by grid search:")
-    #print(clf.best_estimator_)
+        #print("Best estimator found by grid search:")
+        #print(clf.best_estimator_)
 
-    #joblib.dump(clf, saved_classifier_filename)
-else:
-    clf = joblib.load(saved_classifier_filename)
+        #joblib.dump(clf, saved_classifier_filename)
+    else:
+        clf = joblib.load(saved_classifier_filename)
 
-(test_features, test_labels) = get_test_features_and_labels(load_test_features)
+    (test_features, test_labels) = get_test_features_and_labels(load_test_features)
 
-test_labels_bin = label_binarize(test_labels, classes=[-1,1])
+    test_labels_bin = label_binarize(test_labels, classes=[-1,1])
 
-pred_labels = clf.predict(test_features)
+    pred_labels = clf.predict(test_features)
 
-pred_confidences = clf.predict_proba(test_features)
+    pred_confidences = clf.predict_proba(test_features)
 
-plot_roc_curve(test_labels_bin, pred_confidences)
+    plot_roc_curve(test_labels_bin, pred_confidences)
 
-from sklearn.metrics import roc_curve, accuracy_score,confusion_matrix, roc_auc_score, auc
-from scipy.optimize import brentq
-from scipy.interpolate import interp1d
+    from sklearn.metrics import roc_curve, accuracy_score,confusion_matrix, roc_auc_score, auc
+    from scipy.optimize import brentq
+    from scipy.interpolate import interp1d
 
-roc_auc = roc_auc_score(test_labels, pred_confidences[:,1])
-print('ROC area under the curve score {}'.format(roc_auc))
+    roc_auc = roc_auc_score(test_labels, pred_confidences[:,1])
+    print('ROC area under the curve score {}'.format(roc_auc))
 
-# compute the equal error rate
-fpr, tpr, _ = roc_curve(test_labels, pred_confidences[:,1])
-eer = brentq(lambda x: 1. - x - interp1d(fpr, tpr)(x), 0., 1.)
-print('Equal error rate {}'.format(eer))
+    # compute the equal error rate
+    fpr, tpr, _ = roc_curve(test_labels, pred_confidences[:,1])
+    eer = brentq(lambda x: 1. - x - interp1d(fpr, tpr)(x), 0., 1.)
+    print('Equal error rate {}'.format(eer))
 
-print('Accuracy score {}'.format(accuracy_score(test_labels, pred_labels)))
-print('Confusion matrix {}'.format(confusion_matrix(test_labels, pred_labels)))
+    print('Accuracy score {}'.format(accuracy_score(test_labels, pred_labels)))
+    print('Confusion matrix {}'.format(confusion_matrix(test_labels, pred_labels)))
 
+if __name__ == '__main__':
+    main()

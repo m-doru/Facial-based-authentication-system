@@ -15,7 +15,7 @@ from plot_roc_curve import plot_roc_curve
 extension = '.pkl'
 version = 'redchannel'
 
-def get_train_features_and_labels(load_train_features):
+def get_train_features_and_labels(load_train_features, mlbp_feature_computer=None):
     saved_realfaces_train_features_filename = '../featuresVectors/msu_mfsd_realfaces_features_joblib' + version + extension
     saved_spooffaces_train_features_filename = '../featuresVectors/msu_mfsd_spooffaces_features_joblib' + version + extension
 
@@ -43,7 +43,7 @@ def get_train_features_and_labels(load_train_features):
 
     return (train_features, train_labels)
 
-def get_test_features_and_labels(load_test_features):
+def get_test_features_and_labels(load_test_features, mlbp_feature_computer=None):
     saved_realfaces_test_features_filename = '../featuresVectors/msu_mfsd_realfaces_test_featues.joblib' + version + extension
     saved_spooffaces_test_features_filename = '../featuresVectors/msu_mfsd_spooffaces_test_featues.joblib' + version + extension
 
@@ -65,67 +65,65 @@ def get_test_features_and_labels(load_test_features):
 
     return (test_features, test_labels)
 
+def main():
+    saved_classifier_filename = '../classifiers/msu_mfsd' + version + extension
 
-saved_classifier_filename = '../classifiers/msu_mfsd' + version + extension
+    # load or recompute train features. If none, the train features are not loaded into memory
+    load_train_features = False
+    # retrain or load classifier
+    load_classifier = False
+    # load or recompute test features
+    load_test_features = False
 
-# load or recompute train features. If none, the train features are not loaded into memory
-load_train_features = True
-# retrain or load classifier
-load_classifier = True
-# load or recompute test features
-load_test_features = True
+    # descriptor computer
+    mlbp_feature_computer = feature_computer.FrameFeatureComputer(features.MultiScaleLocalBinaryPatterns((8,1), (8,2),
+                                                                                                         (16, 2)))
+    #mlbp_feature_computer = feature_computer.FrameFeatureComputer(features.LocalBinaryPatterns(8,1))
 
-# descriptor computer
-mlbp_feature_computer = feature_computer.FrameFeatureComputer(features.MultiScaleLocalBinaryPatterns((8,1), (8,2),
-                                                                                                     (16, 1), (16,2)))
-#mlbp_feature_computer = feature_computer.FrameFeatureComputer(features.LocalBinaryPatterns(8,1))
+    (train_features, train_labels) = get_train_features_and_labels(load_train_features, mlbp_feature_computer)
 
-(train_features, train_labels) = get_train_features_and_labels(load_train_features)
+    if not load_classifier:
+        '''
+        param_grid = [
+            {'C':[0.0001, 0.001, 0.01], 'kernel':['linear'], 'class_weight':['balanced', None]},
+            {'C':[0.0001, 0.001, 0.01], 'kernel':['rbf'],'gamma':[0.0001, 0.001], 'class_weight':['balanced', None]}
+        ]
+        # C = 0.0001, kernel=linear, class_weight=balanced
+        clf = GridSearchCV(svm.SVC(verbose=True, probability=True), param_grid, verbose=True)
+        '''
+        #clf = svm.SVC(verbose=True, probability=True, C=0.0001, kernel='linear', class_weight='balanced')
+        clf = svm.SVC(verbose=True, probability=True, C=0.001, kernel='rbf', gamma=0.001, class_weight='balanced')
 
-if not load_classifier:
-    '''
-    param_grid = [
-        {'C':[0.0001, 0.001, 0.01], 'kernel':['linear'], 'class_weight':['balanced', None]},
-        {'C':[0.0001, 0.001, 0.01], 'kernel':['rbf'],'gamma':[0.0001, 0.001], 'class_weight':['balanced', None]}
-    ]
-    # C = 0.0001, kernel=linear, class_weight=balanced
-    clf = GridSearchCV(svm.SVC(verbose=True, probability=True), param_grid, verbose=True)
-    '''
-    #clf = svm.SVC(verbose=True, probability=True, C=0.0001, kernel='linear', class_weight='balanced')
-    clf = svm.SVC(verbose=True, probability=True, C=0.001, kernel='rbf', gamma=0.01, class_weight='balanced')
+        clf.fit(train_features, train_labels)
 
-    clf.fit(train_features, train_labels)
-
-    #print("Best estimator found by grid search:")
-    #print(clf.best_estimator_)
-
-    joblib.dump(clf, saved_classifier_filename)
-else:
-    clf = joblib.load(saved_classifier_filename)
+        joblib.dump(clf, saved_classifier_filename)
+    else:
+        clf = joblib.load(saved_classifier_filename)
 
 
-(test_features, test_labels) = get_test_features_and_labels(load_test_features)
-test_labels_bin = label_binarize(test_labels, classes=[-1,1])
+    (test_features, test_labels) = get_test_features_and_labels(load_test_features, mlbp_feature_computer)
+    test_labels_bin = label_binarize(test_labels, classes=[-1,1])
 
-pred_labels = clf.predict(test_features)
+    pred_labels = clf.predict(test_features)
 
-pred_confidences = clf.predict_proba(test_features)
+    pred_confidences = clf.predict_proba(test_features)
 
-plot_roc_curve(test_labels_bin, pred_confidences)
+    plot_roc_curve(test_labels_bin, pred_confidences)
 
-from sklearn.metrics import roc_curve, accuracy_score,confusion_matrix, roc_auc_score, auc
-from scipy.optimize import brentq
-from scipy.interpolate import interp1d
+    from sklearn.metrics import roc_curve, accuracy_score,confusion_matrix, roc_auc_score, auc
+    from scipy.optimize import brentq
+    from scipy.interpolate import interp1d
 
-roc_auc = roc_auc_score(test_labels, pred_confidences[:,1])
-print('ROC area under the curve score {}'.format(roc_auc))
+    roc_auc = roc_auc_score(test_labels, pred_confidences[:,1])
+    print('ROC area under the curve score {}'.format(roc_auc))
 
-# compute the equal error rate
-fpr, tpr, _ = roc_curve(test_labels, pred_confidences[:,1])
-eer = brentq(lambda x: 1. - x - interp1d(fpr, tpr)(x), 0., 1.)
-print('Equal error rate {}'.format(eer))
+    # compute the equal error rate
+    fpr, tpr, _ = roc_curve(test_labels, pred_confidences[:,1])
+    eer = brentq(lambda x: 1. - x - interp1d(fpr, tpr)(x), 0., 1.)
+    print('Equal error rate {}'.format(eer))
 
-print('Accuracy score {}'.format(accuracy_score(test_labels, pred_labels)))
-print('Confusion matrix {}'.format(confusion_matrix(test_labels, pred_labels)))
+    print('Accuracy score {}'.format(accuracy_score(test_labels, pred_labels)))
+    print('Confusion matrix {}'.format(confusion_matrix(test_labels, pred_labels)))
 
-
+if __name__=='__main__':
+    main()
