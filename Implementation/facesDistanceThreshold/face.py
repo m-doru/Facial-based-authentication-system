@@ -28,15 +28,20 @@ class Face:
 
     # Class methods
     @classmethod
-    def fromImagePath(cls, filepath):
+    def from_image_path(cls, filepath):
         id = cls._compute_id(filepath)
-        representation = cls.getNetRep(filepath, False, cls.imgDim)
+        representation = cls.get_net_rep(filepath, False, cls.imgDim)
         return cls(id, representation, filepath)
 
     @classmethod
-    def fromImage(cls, id, image):
-        representation = cls.getNetRep(None, False, cls.imgDim, image)
+    def from_image(cls, id, image):
+        representation = cls.get_net_rep(None, False, cls.imgDim, image)
         return cls(id, representation)
+
+    @classmethod
+    def from_image_path_with_id(cls, filepath, id):
+        representation = cls.get_net_rep(filepath, False, cls.imgDim)
+        return cls(id=id, representation=representation, filepath=filepath)
 
     @classmethod
     def _compute_id(cls,filepath):
@@ -44,7 +49,7 @@ class Face:
         return filename.split('_')[0]
 
     @classmethod
-    def getNetRep(cls, imgPath, verbose, imgDim, image=None):
+    def get_net_rep(cls, imgPath, verbose, imgDim, image=None):
         if imgPath is not None:
             if verbose:
                 print("Processing {}.".format(imgPath))
@@ -62,7 +67,7 @@ class Face:
 
         start = time.time()
         bbs = Face.aligner.getAllFaceBoundingBoxes(rgbImg)
-        if bbs is None:
+        if bbs is None or len(bbs) == 0:
             raise Exception("Unable to find a face: {}".format(imgPath))
         elif len(bbs) > 1:
             raise Exception("Found more than a face in: {}".format(imgPath))
