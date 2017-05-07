@@ -1,11 +1,15 @@
 from __future__ import print_function
+
+from facespair import FacesPair
+from face import Face
+
 import itertools
 import os
 import re
-import matplotlib.pyplot as pyplot
+
 import joblib
-from facespair import FacesPair
-from face import Face
+import matplotlib.pyplot as pyplot
+import matplotlib.patches as mpatches
 
 def get_faces_with_ids(path_to_db, verbose = False):
     face_id_multiple_pattern = re.compile(".+[1-9]+\.[a-z]{3}")
@@ -35,37 +39,58 @@ def get_faces_with_ids(path_to_db, verbose = False):
 
     return faces
 
+def get_face_pairs(faces, examples_per_subject):
+    filtered_faces = []
+    used_faces = {}
+    for face in faces:
+        if face.id not in used_faces:
+            used_faces[face.id] = 1
+        if used_faces[face.id] < examples_per_subject:
+            filtered_faces.append(face)
+            used_faces[face.id] += 1
+
+    face_pairs = []
+    for (face1, face2) in itertools.combinations(filtered_faces, 2):
+        fp = FacesPair(face1, face2)
+        face_pairs.append(fp)
+
+    face_pairs.sort(key=lambda fp:fp.distance)
+
+    return face_pairs
 
 
-def main(load=False):
-    saved_face_pairs_filename = "sorted_face_pairs.pkl"
+def main(load=False, examples_per_subject=None):
+    saved_faces_filename = "sorted_face_pairs.pkl"
     if not load:
-        path_to_db = '/home/doru/Desktop/MsCelebV1-Faces-Aligned.Samples'
-        faces = get_faces_with_ids(path_to_db)
-        face_pairs = []
-        for (face1, face2) in itertools.combinations(faces, 2):
-            fp = FacesPair(face1, face2)
-            face_pairs.append(fp)
-
-        face_pairs.sort(key=lambda fp:fp.distance)
-        joblib.dump(face_pairs, saved_face_pairs_filename)
+        path_to_db = '../databases/MsCelebsV1-Faces-Cropper-07'
+        faces = get_faces_with_ids(path_to_db, True)
+        joblib.dump(faces, saved_faces_filename)
     else:
-        face_pairs = joblib.load(saved_face_pairs_filename)
+        faces = joblib.load(saved_faces_filename)
 
-    distances = []
-    same_id = []
-
+    face_pairs = get_face_pairs(faces, examples_per_subject)
+    same_id_distances = []
+    diff_id_distances = []
     for fp in face_pairs:
         if fp.same_id:
-            distances.append(fp.distance)
-            same_id.append(0)
+            same_id_distances.append(fp.distance)
         else:
-            distances.append(fp.distance)
-            same_id.append(1)
+            diff_id_distances.append(fp.distance)
 
-    pyplot.plot(distances, same_id, '.b')
+    pyplot.figure(1)
+    pyplot.hist(same_id_distances, 40, normed=1, facecolor='green')
+    pyplot.title('Distribution of face distances')
+    pyplot.xlabel('Faces distance')
+    pyplot.ylabel('# of face pairs')
+    pyplot.axis([0, 4, 0, 1])
+    pyplot.grid(True)
+    pyplot.hist(diff_id_distances, 40, normed=1, facecolor='red', alpha=0.75)
+
+    diff_subj_patch = mpatches.Patch(color='red', label='Different subjects')
+    same_subj_patch = mpatches.Patch(color='green', label='Same subjects')
+    pyplot.legend(handles=[same_subj_patch, diff_subj_patch])
+
     pyplot.show()
 
-
 if __name__ == "__main__":
-    main(True)
+    main(False, 10)
