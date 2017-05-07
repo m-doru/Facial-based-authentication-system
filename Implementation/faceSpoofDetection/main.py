@@ -113,8 +113,8 @@ def main():
 
     align = openface.AlignDlib(args.dlibFacePredictor)
     faceSpoofValidator = faceSpoofValidation.FaceSpoofValidator(
-            features.MultiScaleLocalBinaryPatterns((8, 1), (24, 3), (40, 5)),
-            'classifiers/casia.pkl')
+            features.MultiScaleLocalBinaryPatterns((8,1), (8,2), (16,2)),
+            'classifiers/idiap.pkl')
     while True:
         ret, frame = video_capture.read()
 
