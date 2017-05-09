@@ -91,6 +91,7 @@ def main(load=False, examples_per_subject=None):
     pyplot.legend(handles=[same_subj_patch, diff_subj_patch])
 
     pyplot.show()
+    pyplot.savefig('dist_faces_' + str(examples_per_subject) + '.png')
 
 if __name__ == "__main__":
-    main(False, 10)
+    main(True, 10)

@@ -21,3 +21,7 @@ Schimbarea clasificatorului a crescut dimensiunea feature-vectorului mlbp la 758
 Accuracy undeva la 88% poate mai mult in functie de baza de date
 
 Am testat performanta in cazul interdatabase si rezultatele sunt dezamagitoare, undeva la ~60%
+
+-----------------------------------------------------------------
+Impartirea datelor de antrenare si testare tot pe ele
+
