@@ -1,0 +1,5 @@
+ROC area under the curve score 0.530715632218
+Equal error rate 0.49244222361
+Accuracy score 0.534547878249
+Confusion matrix [[4345 3660]
+ [ 530  467]]
