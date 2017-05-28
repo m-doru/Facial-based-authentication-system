@@ -1,9 +1,11 @@
 import os
 
 from sklearn import svm
-from sklearn.grid_search import GridSearchCV
+from sklearn.grid_search import GridSearchCV, RandomizedSearchCV
+from scipy.stats import randint as sp_randint
 from sklearn.preprocessing import label_binarize
 import joblib
+from scipy.stats import uniform as sp_uniform
 
 from faceSpoofDetection import features
 
@@ -69,11 +71,11 @@ def main():
     saved_classifier_filename = '../classifiers/msu_mfsd' + version + extension
 
     # load or recompute train features. If none, the train features are not loaded into memory
-    load_train_features = False
+    load_train_features = True
     # retrain or load classifier
     load_classifier = False
     # load or recompute test features
-    load_test_features = False
+    load_test_features = True
 
     # descriptor computer
     mlbp_feature_computer = feature_computer.FrameFeatureComputer(features.MultiScaleLocalBinaryPatterns((8,1), (8,2),
@@ -88,13 +90,31 @@ def main():
             {'C':[0.0001, 0.001, 0.01], 'kernel':['linear'], 'class_weight':['balanced', None]},
             {'C':[0.0001, 0.001, 0.01], 'kernel':['rbf'],'gamma':[0.0001, 0.001], 'class_weight':['balanced', None]}
         ]
-        # C = 0.0001, kernel=linear, class_weight=balanced
-        clf = GridSearchCV(svm.SVC(verbose=True, probability=True), param_grid, verbose=True)
         '''
+        # C = 0.0001, kernel=linear, class_weight=balanced
+        param_grid = {'C':[0.0001], 'kernel':['linear'], 'gamma':[0.0001, 0.001, 1, 10],
+                      'class_weight':['balanced'], 'decision_function_shape':['ovr']}
+        clf = GridSearchCV(svm.SVC(verbose=True, probability=True), param_grid, verbose=True, n_jobs=4)
+
         #clf = svm.SVC(verbose=True, probability=True, C=0.0001, kernel='linear', class_weight='balanced')
-        clf = svm.SVC(verbose=True, probability=True, C=0.001, kernel='rbf', gamma=0.001, class_weight='balanced')
+        #clf = svm.SVC(verbose=True, probability=True, C=0.001, kernel='rbf', gamma=0.001, class_weight='balanced')
+        # C = 5.77218597038 gamma = 9.38268773999 class_weight = balanced  kernel = linear
+        clf = svm.SVC(verbose=True, probability=True, C=5.772185, gamma=9.3826877, class_weight='balanced',
+                      kernel='linear')
+
+        #param_dist = {
+        #    'C':sp_uniform(0.00001, 10), 'kernel':['rbf', 'linear'], 'gamma':sp_uniform(0.0001, 10),
+        #    'class_weight':['balanced', None], 'decision_function_shape':['ovr', 'ovo']
+        #}
+        #n_iter_search = 20
+        #clf = RandomizedSearchCV(svm.SVC(verbose=True, probability=True), param_distributions=param_dist,
+        #                         n_iter=n_iter_search, n_jobs=4, verbose=True)
+
 
         clf.fit(train_features, train_labels)
+
+        #print("Best estimator found by grid search:")
+        #print(clf.best_estimator_)
 
         joblib.dump(clf, saved_classifier_filename)
     else:

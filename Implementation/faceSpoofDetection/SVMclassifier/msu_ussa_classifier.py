@@ -62,9 +62,9 @@ def main():
     # load or recompute train features. If none, the train features are not loaded into memory
     load_train_features = True
     # retrain or load classifier
-    load_classifier = False
+    load_classifier = True
     # load or recompute test features
-    load_test_features = False
+    load_test_features = True
     # descriptor computer
 
     mlbp_feature_computer = feature_computer.FrameFeatureComputer(features.MultiScaleLocalBinaryPatterns((8,1), (8,2),

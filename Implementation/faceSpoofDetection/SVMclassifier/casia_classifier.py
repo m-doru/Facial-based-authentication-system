@@ -17,7 +17,7 @@ saved_classifier_filename = '../classifiers/casia.pkl'
 # load or recompute train features
 load_train_features = True
 # retrain or load classifier
-load_classifier = True
+load_classifier = False
 # load or recompute test features
 load_test_features = True
 
@@ -90,8 +90,8 @@ def main():
         param_grid = {'C':[0.0001, 0.001, 0.01], 'kernel':['linear'], 'class_weight':['balanced', None]}
 
         #clf = GridSearchCV(svm.SVC(verbose=True, probability=True), param_grid, verbose=True, n_jobs=4)
-        #clf = svm.SVC(verbose=True, probability=True, C = 0.001, kernel='linear', class_weight='balanced')
-        clf = svm.SVC(verbose=True, probability=True, C = 0.001, kernel='rbf', gamma=0.1, class_weight='balanced')
+        clf = svm.SVC(verbose=True, probability=True, C = 0.001, kernel='linear', class_weight='balanced')
+        #clf = svm.SVC(verbose=True, probability=True, C = 0.001, kernel='rbf', gamma=0.1, class_weight='balanced')
 
         clf.fit(train_features, train_labels)
 

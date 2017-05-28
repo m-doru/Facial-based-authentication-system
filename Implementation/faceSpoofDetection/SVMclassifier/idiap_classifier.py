@@ -12,7 +12,7 @@ from faceSpoofDetection import features
 extension = '.pkl'
 version = 'redchannel'
 
-def get_train_features_and_labels(load_train_features):
+def get_train_features_and_labels(load_train_features, mlbp_feature_computer = None):
     saved_realfaces_train_features_filename = '../featuresVectors/idiap_realfaces_features_' + version + extension
     saved_spooffaces_train_features_filename = '../featuresVectors/idiap_spooffaces_features_' + version + extension
 
@@ -35,13 +35,17 @@ def get_train_features_and_labels(load_train_features):
         train_labels_real = [1 for _ in range(len(real_features_train))]
         train_labels_spoof = [-1 for _ in range(len(spoof_features_train))]
 
+        size_real = len(real_features_train)
+        size_spoof = len(spoof_features_train)
         # create the full features and corresponding labels
-        train_features = real_features_train + spoof_features_train
-        train_labels = train_labels_real + train_labels_spoof
+        train_features = real_features_train[:-size_real/10] + spoof_features_train[:-size_spoof/10] + \
+            real_features_train[-size_real/10:] + spoof_features_train[-size_spoof/10:]
+        train_labels = train_labels_real[:-size_real/10] + train_labels_spoof[:-size_spoof/10] + \
+            train_labels_real[-size_real/10:] + train_labels_spoof[-size_spoof/10:]
 
     return (train_features, train_labels)
 
-def get_test_features_and_labels(load_test_features):
+def get_test_features_and_labels(load_test_features, mlbp_feature_computer = None):
     saved_realfaces_test_features_filename = '../featuresVectors/idiap_realfaces_test_features_' + version + extension
     saved_spooffaces_test_features_filename ='../featuresVectors/idiap_spooffaces_test_features_' + version + extension
     if load_test_features == False:
@@ -78,7 +82,12 @@ def main():
     mlbp_feature_computer = feature_computer.FrameFeatureComputer(features.MultiScaleLocalBinaryPatterns((8,1), (8,2),
                                                                                                          (16,2)))
 
-    (train_features, train_labels) = get_train_features_and_labels(load_train_features)
+    (train_features, train_labels) = get_train_features_and_labels(load_train_features, mlbp_feature_computer)
+    size = len(train_features)
+    test_features = train_features[-size/10:]
+    test_labels = train_labels[-size/10:]
+    train_features = train_features[:-size/10]
+    train_labels = train_labels[:-size/10]
 
     if not load_classifier:
         '''
@@ -100,7 +109,7 @@ def main():
     else:
         clf = joblib.load(saved_classifier_filename)
 
-    (test_features, test_labels) = get_test_features_and_labels(load_test_features)
+    #(test_features, test_labels) = get_test_features_and_labels(load_test_features)
 
     test_labels_bin = label_binarize(test_labels, classes=[-1,1])
 
