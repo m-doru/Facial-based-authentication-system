@@ -1,0 +1,36 @@
+abstract:
+    ce metode am folosit
+    ce problema am abordat
+    ce rezultate am obtinut
+    < 1pag
+
+cuprins:
+    lista de figuri si lita de tabele
+    tabel si figuri: numar, titlu, descriere
+
+introducere:
+    motivarea alegerii
+    obiective
+    structura lucrarii prezentand fiecare capitol
+    repere istorice pana la state of the art
+    referire la aplicatia software -> descrierea
+
+capitolul 2:
+    fundamente teoretice
+    se poate ilustra si grafic
+
+capitolul 3 -> aplicativ:
+    exact ce am facut
+    cum merge aplicatia pe pasi
+
+capitolul 4:
+    baze de date cu experimente
+    cu exemplificari ce a mers bine sau rau
+
+Concluzii:
+    de ce merg bine sau rau unele lucruri
+    ce poate fi imbunatatit
+
+Anexe:
+    parametrii folositi
+    cuvinte cheie
