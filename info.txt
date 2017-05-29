@@ -1,6 +1,6 @@
 abstract:
-    ce metode am folosit
     ce problema am abordat
+    ce metode am folosit
     ce rezultate am obtinut
     < 1pag
 

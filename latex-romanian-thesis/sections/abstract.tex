@@ -6,6 +6,11 @@
 	\Large \textbf{Abstract}	
 \end{center}
 
-Face recognition has been, in the last couple of years, the subject of extensive research given the advances in deep learning field of machine learning and given the growth in size of labeled data needed for these deep learning methods to provide state of the art results. In the project that this paper will further describe, we employed such a deep learning architecture in order to create an facial-based authentication system which we tried to make more robust adding a component for face spoof validation given it's security applications.
+Face recognition has been the target of extensive research in the last half decade given the new ways of approaching the problem resulted from advances in deep learning by making possible end-to-end learning of the task using Convolutional Neural Networks and from the growth in size of available training datasets necessary for these methods to reach state of the art performance. 
+
+In the project this paper will further describe, we employed such a deep learning architecture in order to create a facial-based authentication system to which, given it's security applications, we added a component for face spoof validation based on Local binary patterns in order to combat attacks as printed photos or replayed videos.
+
+We succeeded in making a reliable face recognition system that could be ready for real world applications by using Openface \cite{amos2016openface} - the open-source implementation of the FaceNet \cite{DBLP:journals/corr/SchroffKP15} architecture which achieved a state of the art accuracy of \textbf{99.63\%}  on the Labeled Faces in the Wild (LFW) dataset. We also managed to achieve good results for faces validation on data from the same database but the data available did not have a good generalization power therefore this part of the system cannot be yet found suitable for use in production.
+
 
 \vspace*{\fill}
