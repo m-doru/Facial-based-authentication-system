@@ -11,19 +11,19 @@ cuprins:
 introducere:
     motivarea alegerii
     obiective
-    structura lucrarii prezentand fiecare capitol
     repere istorice pana la state of the art
+    structura lucrarii prezentand fiecare capitol
     referire la aplicatia software -> descrierea
 
-capitolul 2:
+capitolul 1:
     fundamente teoretice
     se poate ilustra si grafic
 
-capitolul 3 -> aplicativ:
+capitolul 2 -> aplicativ:
     exact ce am facut
     cum merge aplicatia pe pasi
 
-capitolul 4:
+capitolul 3:
     baze de date cu experimente
     cu exemplificari ce a mers bine sau rau
 
