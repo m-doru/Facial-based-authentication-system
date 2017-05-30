@@ -9,27 +9,31 @@ cuprins:
     tabel si figuri: numar, titlu, descriere
 
 introducere:
-    motivarea alegerii
-    obiective
-    repere istorice pana la state of the art
-    structura lucrarii prezentand fiecare capitol
-    referire la aplicatia software -> descrierea
+    motivarea alegerii - done
+    obiective - done
+    repere istorice pana la state of the art - state of the art left
+    structura lucrarii prezentand fiecare capitol - 2 pagini (face identification, face alignment, face recognition, face validation)
+    referire la aplicatia software -> descrierea - jumatate de pagina
 
 capitolul 1:
     fundamente teoretice
     se poate ilustra si grafic
+    - de scris cam 10 pagini
 
 capitolul 2 -> aplicativ:
     exact ce am facut
     cum merge aplicatia pe pasi
+    - de scris cam 10 pagini
 
 capitolul 3:
     baze de date cu experimente
     cu exemplificari ce a mers bine sau rau
+    - de scris cam 10 pagini
 
 Concluzii:
     de ce merg bine sau rau unele lucruri
     ce poate fi imbunatatit
+    - de scris cam 2 pagini
 
 Anexe:
     parametrii folositi
