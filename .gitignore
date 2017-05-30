@@ -39,3 +39,9 @@ Implementation/faceSpoofDetection/featuresVectors/
 
 # Ignore all pyc files
 *.pyc
+
+# Ignore mac files
+.DS_Store
+
+# Ignore swap files
+*.swp
