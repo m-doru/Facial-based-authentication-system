@@ -19,6 +19,8 @@
 \usepackage[toc,page]{appendix}
 \usepackage{subcaption}
 \usepackage{makeidx}
+\usepackage{gensymb}
+\usepackage{amsmath}
 \usepackage{geometry}
 \geometry{
 	a4paper,
@@ -31,21 +33,16 @@
 
 % Line spacing
 \renewcommand{\baselinestretch}{1.35} 
-\renewcommand\appendixtocname{Anexe}
-\renewcommand\appendixname{Anexe}
-\renewcommand\appendixpagename{Anexe}
+\renewcommand\appendixtocname{Anexes}
+\renewcommand\appendixname{Anexes}
+\renewcommand\appendixpagename{Anexes}
 
 \graphicspath{{images/}{../images/}}
 
-\newunicodechar{ș}{\cb{s}}
-\newunicodechar{Ș}{\cb{S}}
-\newunicodechar{ț}{\cb{t}}
-\newunicodechar{Ț}{\cb{T}}
-
-\newtheorem{remark}{Observație}[chapter]
-\newtheorem{definition}{Definiție}[chapter]
-\newtheorem{lemma}{Lemă}[chapter]
-\newtheorem{theorem}{Teoremă}[chapter]
+\newtheorem{remark}{Observation}[chapter]
+\newtheorem{definition}{Definition}[chapter]
+\newtheorem{lemma}{Lemma}[chapter]
+\newtheorem{theorem}{Theorem}[chapter]
 
 \makeindex
 
@@ -61,14 +58,23 @@
 
 \newpage
 
+\subfile{sections/notite}
+
+\newpage
+
+
 \subfile{sections/abstract}
 \subfile{sections/introduction}
 
 \newpage
 
-\subfile{sections/face_recognition}
+\subfile{sections/preliminaries}
+
+\newpage
+
+\subfile{sections/face_detection}
 \subfile{sections/face_alignment}
-\subfile{sections/face_identification}
+\subfile{sections/face_recognition}
 \subfile{sections/face_validation}
 
 \newpage
@@ -81,8 +87,9 @@
 
 \newpage
 
+\nocite{*}
 \bibliographystyle{plain}
-\bibliography{bibliography/list} 
+\bibliography{bibliography/list}
 
 \printindex
 \subfile{sections/appendix}
