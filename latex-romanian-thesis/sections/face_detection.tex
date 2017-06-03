@@ -1,5 +1,11 @@
 \section{Face detection}
 A way to approach the face detection problem is to see it as an instance of the much general problem of object detection. With this in mind, the Dalal-Triggas detector \cite{DalalTriggs05}, which won the 2006 PASCAL object detection challenge, used a single filter of Histogram of Oriented Gradients (HOG) as features to represent the objects of a class. The detector consisted of sliding a window over the image at different scales, computing the HOG for each position and then using a classifier to determine whether the content of the window belonged to a class.
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[width=15cm]{Process_of_detecting_an_object_with_HOG}
+	\end{center}
+	\caption[Process flow of detecting an object in an image]{The step-by-step process of detecting an object in an image generalized from the person detection method presented in \cite{DalalTriggs05}}
+\end{figure}
 The process of computing the HOG descriptor for a window as described in \cite{DalalTriggs05} respects the following steps: 
 Firstly, the image is converted from RGB space to grayscale applying for each pixel the following formula: $0.2989 * R + 0.5870 * G + 0.1140 * B$, where R, G and B are the values of the red, green, respectively blue channel of the RGB image.	This way we're normalizing the colours. 
 Secondly, a detection window of size $64\times128$ is used to slide over the gray image with a step of 32 pixels.
@@ -50,4 +56,4 @@ $
 $. As concluded in \cite{DalalTriggs05} simple, 1-dimensional $(\begin{smallmatrix}
 -1 & 0 & 1
 \end{smallmatrix})$ masks work best. The histograms computed for each $8\times8$ pixel cells are concatenated resulting in a vector of 36 features. Lastly, for the entire window containing four $16\times16$ pixel blocks results by concatenation a feature vector of 144 dimensions.
-This descriptor is then used to determine whether in the current windows appears an instance of an object that we are looking for.
+This descriptor is then used to determine whether in the current window appears an instance of an object that we are looking for.
