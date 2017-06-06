@@ -35,4 +35,8 @@ which means that the texture unit will contain 8 base 2 values
 \end{figure}
 
 \subsection{Variations of the LBP}
-In 2002, Ojala et al. described in \cite{OjalaPM02} an extension of the LBP from the square of $3\times3$ pixels to any size neighbourhood by considering a circle around the central pixel and takings it's neighbours on this circle. This added two parameters to the LBP, one being the radius $R$ of the circle and the second one being the number of sampled points $P$ on the circle. 
+In 2002, Ojala et al. described in \cite{OjalaPM02} an extension of the LBP from the square of $3\times3$ pixels to any size neighbourhood by considering a circle around the central pixel and sampling it's neighbours on this circle. This adds two parameters to the LBP, one being the radius $R$ of the circle and the second one being the number of sampled points $P$ on the circle.  With this new definition, we can formulate the LBP operator as being
+\begin{align}
+	LBP_{R,P} = \sum_{0}^{P-1}E_p*2^p
+\end{align}
+As can be observed the $LBP_{R,P}$ operator produces $2^P$ values corresponding to the $2^P$ possible patterns in the texture unit TU. As the P grows linearly, the number of produces values grows exponentially therefore it is obvious that it can create computational problems for values of P not too big.
