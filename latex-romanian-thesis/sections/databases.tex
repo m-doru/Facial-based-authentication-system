@@ -1,0 +1,10 @@
+\chapter{Databases}
+Given that at the core of the application are learning algorithms, the system reliability is determined by the databases used to obtain train and test data. Although for the face embedding part we were not able to train the neural network given the limited computational power at our disposal, for the face validation part, the public domain databases offered us a large choice, the most commonly used ones are described in the following sections. In order to learn the face distance threshold, we used another database, MS-Celeb-1M \cite{guo2016msceleb}, but given it's purpose for training neural networks, we only used a small sample which was enough to give us sufficient information about the optimum value of the parameter.
+\section{Face spoof databases}
+In this section we analize the accuracy of our LBP-implementation of a face liveness detection method based on the most commonly used anti face spoof databases available in public domain. We present our intra-database experiments as well as cross-database ones, the latter one being considered as better in modeling a real usecase.
+\subsection{CASIA face antispoofing database }
+\subsection{MSU USSA}
+\subsection{MSU MFSD}
+\subsection{IDIAP Replay-Attack database}
+\subsection{Interdatabase testing}
+\section{Face distance threshold}
