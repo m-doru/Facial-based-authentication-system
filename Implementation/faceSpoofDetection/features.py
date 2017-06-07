@@ -48,7 +48,6 @@ class MultiScaleLocalBinaryPatterns:
                     patch = matrix[i:i+32, j:j+32]
                     (lbp_patch_feature, _,_) = lbp.compute(patch)
                     lbpFeature = lbpFeature + lbp_patch_feature.tolist()
-
         return lbpFeature
 
     def computeFeatureImageWise(self, matrix):

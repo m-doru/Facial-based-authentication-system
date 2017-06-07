@@ -72,6 +72,8 @@ def processFrame(rgbImage, align, faceSpoofValidator, args):
     #Get detected faces aligned
     alignedFaces = []
 
+    #!!! TRY HERE WITHOUT ALIGNING THE FACE FIRST
+
     for box in bb:
         alignedFaces.append(align.align(
             args.imgDim,
@@ -128,11 +130,12 @@ def main():
 
         start = time.time()
 
+        face_validation_start = time.time()
+
         #Get the faces in the frame that are not spoof
         facesWithValidation = processFrame(frame, align, faceSpoofValidator, args)
 
         #Process here faces having their validation
-        faceValidationStart = time.time()
         for faceWithValidation in facesWithValidation:
             bb = faceWithValidation[1]
 
@@ -144,7 +147,7 @@ def main():
             else:
                 cv2.rectangle(frame, ll, ur, color=(0, 0, 255), thickness=3)
 
-        print('Faces validation took {}'.format(time.time() - faceValidationStart))
+        print('Faces validation took {}'.format(time.time() - face_validation_start))
 
         cv2.imshow('face', frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):

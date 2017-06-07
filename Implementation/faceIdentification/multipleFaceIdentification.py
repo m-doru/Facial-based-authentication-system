@@ -199,21 +199,25 @@ def main():
             ll = (int(round(bb.left()/args.scale)),int(round(bb.bottom()/args.scale)))
             ur = (int(round(bb.right()/args.scale)), int(round(bb.top()/args.scale)))
 
-
             face = alignedFaces[i]
 
             faceRep = net.forward(face)
 
             recognized = False
 
+            min_dist_name = (5, "")
+
             for knownFaceRep, name in knownFacesRep:
                 diff = knownFaceRep - faceRep
                 d = np.dot(diff, diff)
-                if d < args.threshold:
-                    cv2.rectangle(origFrame, ll, ur, color=(0,255,0),thickness=3)
-                    cv2.putText(origFrame, name, ll, cv2.FONT_HERSHEY_PLAIN, 2, color=(255,0,0), thickness=2)
-                    recognized = True
-                    break
+                if d < min_dist_name[0]:
+                    min_dist_name = (d, name)
+
+            if min_dist_name[0] < args.threshold:
+                cv2.rectangle(origFrame, ll, ur, color=(0,255,0),thickness=3)
+                cv2.putText(origFrame, min_dist_name[1], ll, cv2.FONT_HERSHEY_PLAIN, 2, color=(255,0,0), thickness=2)
+                recognized = True
+                break
 
             if recognized == False:
                 cv2.rectangle(origFrame, ll, ur, color=(0, 0, 255), thickness=3)
