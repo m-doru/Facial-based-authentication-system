@@ -1,3 +1,5 @@
+\chapter{Theoretical basis}
+
 \section{Face detection}
 A way to approach the face detection problem is to see it as an instance of the much general problem of object detection. With this in mind, the Dalal-Triggas detector \cite{DalalTriggs05}, which won the 2006 PASCAL object detection challenge, used a single filter of Histogram of Oriented Gradients (HOG) as features to represent the objects of a class. The detector consisted of sliding a window over the image at different scales, computing the HOG for each position and then using a classifier to determine whether the content of the window belonged to a class.
 \begin{figure}[h]
