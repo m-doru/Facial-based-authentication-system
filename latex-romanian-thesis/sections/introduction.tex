@@ -1,6 +1,6 @@
 \chapter{Introduction}
 
-\section{Purpose}
+\section{Motivation}
 
 Given the increase use of artificial intelligence solutions in reliably solving many of our current day-to-day problems, we decided to tackle the problem of face-based authentication in the systems that we use daily.
 
@@ -25,15 +25,12 @@ Relative to the one of the most reliable tests in the field based on the Labeled
 	\item FaceNet with a mean accuracy of 0.9963 and std 0.0016
 \end{itemize}
 
-
-Further in this thesis, we will review in chapter 2 the theoretical basis of face detection, alignment and recognition as well as validation, presenting the algorithms and methods that can be employed to solve the challenges for each stage. Then in chapter 3 we present the implementation of a face authentication system whose reliability is supported by the aspects presented in chapter 2. Before the conclusions 
-
 \section{Structure of the thesis} 
 
-\textbf{In chapter 2} we review the theoretical basis of the key elements of the problem which is structured on four sections: \textbf{face detection} where we present the sliding window approach combined with histograms of oriented gradients used to detect faces in an image, \textbf{face alignment} where show how to address the problem of facial landmark identification and positioning at a specific place in an image, \textbf{face recognition} part introduces the neural network trained to learn a function that embeds a face image on an 128-dimensional euclidean space where the distance between two points corresponds to the similarities between the mapped faces and \textbf{face validation} where we present the Local Binary Pattern, how to compute a feature descriptor based on it with the help of histograms and it's use in face validation.
+\textbf{In chapter 2} we review the theoretical basis of key elements of the problem. It is structured on four sections: \textbf{face detection} where we present the sliding window approach combined with histograms of oriented gradients used to detect faces in an image, \textbf{face alignment} where show how to address the problem of facial landmark identification and positioning at a specific location in an image, \textbf{face recognition} part introduces the neural network trained to learn a function that embeds a face image on an 128-dimensional euclidean space where the distance between two points corresponds to the similarities between the mapped faces and \textbf{face validation} where we present the Local Binary Pattern, how to compute a feature descriptor based on it with the help of histograms and it's use in face validation.
 
-\textbf{In chapter 3} we present our implementation of a face authentication system implemented in Python and based on a powerful set of open-source tools as OpenCV\cite{opencv_library}, Scikit-learn\cite{scikit-learn}, Scikit-image\cite{scikit-image} and Openface\cite{amos2016openface} that are well known and sustained both in the academically and industry fields. We achieved to create a command-line application that would process an image taken from the laptop camera in \textbf{insert here number of secons} managing to detect the face, verify if it is a live face or a spoof attack and to recognize it as being known to the system or not.
+\textbf{In chapter 3} we present our implementation of a face authentication system implemented in Python and based on a powerful set of open-source tools as OpenCV\cite{opencv_library}, Scikit-learn\cite{scikit-learn}, Scikit-image\cite{scikit-image} and Openface\cite{amos2016openface} that are well known and sustained both in the academically and industry fields. We achieved to create a command-line application that would process an image taken from the laptop camera in \textbf{insert here number of seconds} managing to detect the face, verify if it is a live face or a spoof attack and to recognize it as being known to the system or not.
 
-\textbf{In chapter 4} we present the details of four databases that our face validation experiments were based on with the results for each of their evaluation protocols as well as a different cross-database evaluation in order to simulate a real life use case. Additionally, we present another experiment in which we try to determine a threshold parameter for the face embedding function that is used in making the choice of whether two faces belong to the same identity.
+\textbf{In chapter 4} we present the details of four databases that our face validation experiments were based on with the results for each of their evaluation protocols as well as a different cross-database evaluation in order to better simulate a real life use case. Additionally, we present another experiment in which we try to determine a threshold parameter for the face embedding function that is used in making the choice of whether two faces belong to the same identity.
 
 Finally, we state the \textbf{conclusions} where we present what can be improved in the matters of face validation, \textbf{WRITE HERE ABOUT NEURAL NETWORKS FOR FACE VALIDATION AND THE 1 SECOND RULE THAT ANDREW NG SAID}, and recognition.
