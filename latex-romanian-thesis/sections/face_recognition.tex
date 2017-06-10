@@ -18,7 +18,7 @@ As already stated, the FaceNet system is based on a convolutional neural network
 
 In other words, the purpose of the triplet loss is to ensure that an anchor image $x_{i}^{a}$ of a face is closer to all other images of the same face $x_{i}^{p}$ than any other image of different identity face $x_{i}^{n}$. This can be written as
 \begin{align}
-	||x_{i}^{a}  - x_{i}^{p} ||_{2} + \alpha < ||x_{i}^{a}  - x_{i}^{n} ||_{2} \forall (x_{i}^{a}, x_{i}^{p}, x_{i}^{n}) \in \Psi
+	||x_{i}^{a}  - x_{i}^{p} ||_{2} + \alpha < ||x_{i}^{a}  - x_{i}^{n} ||_{2}, \ \ \forall (x_{i}^{a}, x_{i}^{p}, x_{i}^{n}) \in \Psi
 \end{align} where $\Psi$ is the set of all triplets from the training data, and $\alpha$ is a control parameter that imposes a minimum distance between faces of different identities. From this equation, Schroff et al. formulate in \cite{SchroffKP15} the loss that was being minimized as 
 \begin{align}
 L = \sum_{i}^{N} [||f(x_{i}^{a}) - f(x_{i}^{p})||_{2}^{2} - ||f(x_i^a) - f(x_i^n)||_{2}^{2} + \alpha]_{+}
