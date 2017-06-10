@@ -26,19 +26,21 @@ L = \sum_{i}^{N} [||f(x_{i}^{a}) - f(x_{i}^{p})||_{2}^{2} - ||f(x_i^a) - f(x_i^n
 \textbf{Here I could write more about the triplet selection}
 
 \subsection{CNN architecture}
-There were two Convolutional Network Architectures that the FaceNet experimented with: first one was based on Zeiller\&Fergus \cite{ZeilerF13} to which, based on \cite{LinCY13}, Schroff et al. added $1 \times 1 \times d$ convolutional layers between the standards convolutional layers, resulting in 22 layers deep model as can be seen in Table 2.1;
+There were two Convolutional Network Architectures that the FaceNet experimented with: first one was based on Zeiller\&Fergus \cite{ZeilerF13} to which, based on \cite{LinCY13}, Schroff et al. added $1 \times 1 \times d$ convolutional layers between the standards convolutional layers, resulting in 22 layers deep model as can be seen in Table \ref{zeilerfergus-architecture};
 \begin{table}[h]
 	\begin{center}
 		\includegraphics[width=10cm]{ZeilerFergus-architecture}
 	\end{center}
 	\caption[Zeiler\&Fergus architecture used in FaceNet]{Table shows the NN1 architecture from \cite{SchroffKP15} based on Zeiler\&Fergus model with $1 \times 1$ convolutions}
+	\label{zeilerfergus-architecture}
 \end{table}
- second one was based on the GoogLeNet style Inception models \cite{DSzegedyLJSRAEVR14} which, as stated in \cite{SchroffKP15}, have $20\times$ fewer parameters and up to $5\times$fewer FLOPS. The architecture is presented in Table 2.2. In all their experiments, the CNN was trained using Stochastic Gradient Descent with standard backpropagation and AdaGrad. The training time reported in \cite{SchroffKP15} was between 1,000 to 2,000 hours on a CPU cluster and even though the decrease in loss was stated to slow down drastically after 500 hours of training, this still means that the training of such a network on a consumer used PC is infeasible. 
+ second one was based on the GoogLeNet style Inception models \cite{DSzegedyLJSRAEVR14} which, as stated in \cite{SchroffKP15}, have $20\times$ fewer parameters and up to $5\times$fewer FLOPS. The architecture is presented in Table \ref{googlenet-architecture}. In all their experiments, the CNN was trained using Stochastic Gradient Descent with standard backpropagation and AdaGrad. The training time reported in \cite{SchroffKP15} was between 1,000 to 2,000 hours on a CPU cluster and even though the decrease in loss was stated to slow down drastically after 500 hours of training, this still means that the training of such a network on a consumer used PC is infeasible. 
  \begin{table}[h]
  	\begin{center}
  		\includegraphics[width=15cm]{googlenet-architecture}
  	\end{center}
  	\caption[NN2 Inception CNN architecture]{NN2 details as presented in \cite{SchroffKP15}, the only difference to the model from \cite{DSzegedyLJSRAEVR14} is the use of $L_2$ norm instead of max pooling where specified and that the pooling is always $3\times3$}
+ 	\label{googlenet-architecture}
  \end{table}
 \subsection{Face identification} \label{face_recognition}
 
