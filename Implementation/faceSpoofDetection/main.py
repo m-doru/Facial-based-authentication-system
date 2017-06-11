@@ -30,37 +30,37 @@ def initializeParser():
         type=int,
         default=0,
         help='Capture device. 0 for latop webcam and 1 for usb webcam')
-    parser.add_argument('--width', type=int, default=320)
-    parser.add_argument('--height', type=int, default=240)
+    parser.add_argument('--width', type=int, default=640)
+    parser.add_argument('--height', type=int, default=480)
 
     parser.add_argument('--imgDim', type=int,
                         help="Default image dimension.", default=144)
 
     parser.add_argument('--scaleX', type=float, help="Scale to resize the feed image for faster processing",
-                        default=0.5)
+                        default=1)
     parser.add_argument('--scaleY', type=float, help="Scale to resize the feed image for faster processing",
-                        default=0.5)
+                        default=1)
     return parser
 
-def processFrame(rgbImage, align, faceSpoofValidator, args):
+def processFrame(rgb_image, align, faceSpoofValidator, args):
     start = time.time()
 
-    if rgbImage is None:
+    if rgb_image is None:
         raise Exception("Unable to load image/frame")
 
 
     if args.verbose:
-        print("  + Original size: {}".format(rgbImage.shape))
+        print("  + Original size: {}".format(rgb_image.shape))
     if args.verbose:
         print("Loading the image took {} seconds.".format(time.time() - start))
 
-    originalRGBImage = rgbImage
-    rgbImage = cv2.resize(rgbImage, (0,0), fx=args.scaleX, fy=args.scaleY)
+    originalRGBImage = rgb_image
+    rgb_image = cv2.resize(rgb_image, (0, 0), fx=args.scaleX, fy=args.scaleY)
 
     start = time.time()
 
     # Get all bounding boxes
-    bb = align.getAllFaceBoundingBoxes(rgbImage)
+    bb = align.getAllFaceBoundingBoxes(rgb_image)
 
     if bb is None:
         return None
@@ -75,11 +75,7 @@ def processFrame(rgbImage, align, faceSpoofValidator, args):
     #!!! TRY HERE WITHOUT ALIGNING THE FACE FIRST
 
     for box in bb:
-        alignedFaces.append(align.align(
-            args.imgDim,
-            rgbImage,
-            box,
-            landmarkIndices=openface.AlignDlib.OUTER_EYES_AND_NOSE))
+        alignedFaces.append(rgb_image[box.left():box.right(), box.top():box.bottom()].copy())
 
     if alignedFaces is None:
         raise Exception("Unable to align the frame")
@@ -116,7 +112,7 @@ def main():
     align = openface.AlignDlib(args.dlibFacePredictor)
     faceSpoofValidator = faceSpoofValidation.FaceSpoofValidator(
             features.MultiScaleLocalBinaryPatterns((8,1), (8,2), (16,2)),
-            'classifiers/idiap.pkl')
+            'classifiers/classifier_tested_on2.pkl')
     while True:
         ret, frame = video_capture.read()
 

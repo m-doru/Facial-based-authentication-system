@@ -71,11 +71,11 @@ def main():
     saved_classifier_filename = '../classifiers/msu_mfsd' + version + extension
 
     # load or recompute train features. If none, the train features are not loaded into memory
-    load_train_features = True
+    load_train_features = False
     # retrain or load classifier
     load_classifier = False
     # load or recompute test features
-    load_test_features = True
+    load_test_features = False
 
     # descriptor computer
     mlbp_feature_computer = feature_computer.FrameFeatureComputer(features.MultiScaleLocalBinaryPatterns((8,1), (8,2),
@@ -92,8 +92,7 @@ def main():
         ]
         '''
         # C = 0.0001, kernel=linear, class_weight=balanced
-        param_grid = {'C':[0.0001], 'kernel':['linear'], 'gamma':[0.0001, 0.001, 1, 10],
-                      'class_weight':['balanced'], 'decision_function_shape':['ovr']}
+        param_grid = {'C':[0.0001, 0.1, 1, 10], 'kernel':['linear'], 'class_weight':['balanced']}
         clf = GridSearchCV(svm.SVC(verbose=True, probability=True), param_grid, verbose=True, n_jobs=4)
 
         #clf = svm.SVC(verbose=True, probability=True, C=0.0001, kernel='linear', class_weight='balanced')
@@ -113,8 +112,8 @@ def main():
 
         clf.fit(train_features, train_labels)
 
-        #print("Best estimator found by grid search:")
-        #print(clf.best_estimator_)
+        print("Best estimator found by grid search:")
+        print(clf.best_estimator_)
 
         joblib.dump(clf, saved_classifier_filename)
     else:

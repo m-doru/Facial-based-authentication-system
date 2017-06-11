@@ -29,7 +29,7 @@ parser.add_argument('--scale', type=float, default=0.5, help='The scale with whi
 parser.add_argument('--webcam', type=int, default=0, help='Specify which camera to be used for input(0 = webcam, '
                                                           '1 = usb')
 parser.add_argument('--knownFacesDir', type=str, default='../knownfaces')
-parser.add_argument('--threshold', type=float, default=1.1)
+parser.add_argument('--threshold', type=float, default=0.8)
 parser.add_argument('--newKnownReps', action='store_true')
 
 args = parser.parse_args()
@@ -141,14 +141,14 @@ def loadKnownFaces(path):
     path = os.path.join(fileDir, path)
 
     picklePath = os.path.join(path, 'reps.pk')
-
+    '''
     if os.path.isfile(picklePath) and not args.newKnownReps:
         with open(picklePath, 'r') as inputF:
             knownRepresentations = np.load(inputF)
     else:
-        knownRepresentations = computeKnownFacesRepresentation(path)
-        with open(picklePath, 'w') as outputF:
-            np.save(outputF, knownRepresentations)
+    '''
+    knownRepresentations = computeKnownFacesRepresentation(path)
+    #np.save(picklePath, knownRepresentations)
 
     if args.verbose:
         print('Loading known faces representations took {}'.format(time.time() - startTimeLoadingKnownFaces))

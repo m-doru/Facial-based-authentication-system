@@ -2,7 +2,7 @@ import numpy as np
 from skimage import feature
 from vlfeat import vl_dsift
 
-FRAME_SIZE = (144, 120)
+FRAME_SIZE = (144, 144)
 
 class LocalBinaryPatterns:
     def __init__(self, numPoints, radius, method='nri_uniform'):

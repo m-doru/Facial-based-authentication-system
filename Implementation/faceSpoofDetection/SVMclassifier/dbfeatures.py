@@ -22,9 +22,9 @@ def get_frames_features(video_path, feature_computer):
             break
 
         # compute features vectors here
-        # should I compute the feature fector for faces or the entire frame?
+        # should I compute the feature vector for faces or the entire frame?
         # I will go with faces
-        faces = face_det.get_faces_in_frame(frame)
+        faces = face_det.get_aligned_faces_in_frame(frame)
         for face in faces:
             features.append(feature_computer.compute_features(face))
 

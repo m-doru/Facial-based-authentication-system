@@ -6,17 +6,25 @@ import matplotlib.pyplot as plt
 import features
 import openface
 
+from utilityScripts import get_frame_from_video
+import faceSpoofValidation
+
 P = 8
-R = 2
+R = 1
 
-mlbp = features.MultiScaleLocalBinaryPatterns((8, 1), (24, 3),(40, 5))
-#mlbp = features.LocalBinaryPatterns(P, R)
+#mlbp = features.MultiScaleLocalBinaryPatterns((8, 1), (24, 3),(40, 5))
+mlbp = features.LocalBinaryPatterns(P, R, method='default')
 
-faceImg = cv2.imread('../data/face2.jpg', cv2.IMREAD_COLOR)
-spoofFaceImg = cv2.imread('../data/spoofFace2.jpg', cv2.IMREAD_COLOR)
+#faceImg = cv2.imread('../data/face2.jpg', cv2.IMREAD_COLOR)
+#spoofFaceImg = cv2.imread('../data/spoofFace2.jpg', cv2.IMREAD_COLOR)
+medium = 'Tablet_RearCamera'
+faceImg = get_frame_from_video.get_frames('/home/doru/Desktop/Licenta/Implementation/databases'
+                                          '/MSU_USSA/MSU_USSA_Public/LiveSubjectsImages/109.jpg')[0]
+spoofFaceImg = get_frame_from_video.get_frames('/home/doru/Desktop/Licenta/Implementation/databases' +
+                                          '/MSU_USSA/MSU_USSA_Public/SpoofSubjectImages/'+ medium +'/109.jpg')[0]
 
-faceImg = cv2.cvtColor(faceImg, cv2.COLOR_BGR2RGB)
-spoofFaceImg = cv2.cvtColor(spoofFaceImg, cv2.COLOR_BGR2RGB)
+#faceImg = cv2.cvtColor(faceImg, cv2.COLOR_BGR2RGB)
+#spoofFaceImg = cv2.cvtColor(spoofFaceImg, cv2.COLOR_BGR2RGB)
 
 '''
 start = time.time()
@@ -32,7 +40,7 @@ print('Computing the lbp feature in the fast way took {}'.format(time.time() - s
 fastFaceLBPHist = map(lambda x:-x, fastFaceLBPHist)
 diff = np.add(faceLBPHist, fastFaceLBPHist)
 diff = np.absolute(diff)
-
+Visual representation of the components of the application
 print(sum(diff))
 '''
 
@@ -44,7 +52,7 @@ align = openface.AlignDlib("/home/doru/Desktop/Licenta/Implementation/models/dli
 bb = align.getAllFaceBoundingBoxes(faceImg)
 bbs = align.getAllFaceBoundingBoxes(spoofFaceImg)
 
-if bb is None or bbs is None:
+if bb is None or bbs is None or len(bb) == 0 or len(bbs) == 0:
     raise Exception("No faces detected")
 
 
@@ -72,8 +80,12 @@ for box in bbs:
 if alignedSpoofFaces is None:
         raise Exception("Unable to align the frame")
 
-realImgRedChannel = alignedFaces[0][:, :, 2]
-spoofImgRedChannel = alignedSpoofFaces[0][:, :, 2]
+
+realImgRedChannel = alignedFaces[0][:, :, 0]
+spoofImgRedChannel = alignedSpoofFaces[0][:, :, 0]
+
+realImgRedChannel = cv2.cvtColor(alignedFaces[0], cv2.COLOR_RGB2GRAY)
+spoofImgRedChannel = cv2.cvtColor(alignedSpoofFaces[0], cv2.COLOR_RGB2GRAY)
 
 if isinstance(mlbp, features.LocalBinaryPatterns):
     hist, bins, lbpFV = mlbp.compute(realImgRedChannel)
@@ -101,9 +113,15 @@ if isinstance(mlbp, features.LocalBinaryPatterns):
 
     plt.show()
 
+    cv2.imwrite('/home/doru/Desktop/real.png', lbpFV)
+    cv2.imwrite('/home/doru/Desktop/'+medium+'.png', lbpFVSpoof)
+
+    cv2.imshow('face', alignedFaces[0])
+
     lbpFV = lbpFV.astype('uint8')
     cv2.imshow('lbp', lbpFV)
 
+    cv2.imshow('spoofface', alignedSpoofFaces[0])
     lbpFVSpoof = lbpFVSpoof.astype('uint8')
     cv2.imshow('lbpspoof', lbpFVSpoof)
     while(1):

@@ -27,7 +27,7 @@ class FaceSpoofValidator:
         print(self.clf.predict_proba([feature_vector]))
         pred_confidence = self.clf.predict_proba([feature_vector])
 
-        if pred_confidence[0][0] > 0.5:
+        if pred_confidence[0][0] < 0.5:
             return True
         else:
             return False

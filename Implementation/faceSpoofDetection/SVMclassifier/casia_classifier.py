@@ -1,11 +1,14 @@
 from sklearn import svm
 import joblib
 from sklearn.preprocessing import label_binarize
+from sklearn.grid_search import GridSearchCV
 
 import dbfeatures
 import feature_computer
 from plot_roc_curve import plot_roc_curve
 from faceSpoofDetection import features
+
+import numpy as np
 
 # pickels filenames
 extension = '.pkl'
@@ -15,13 +18,13 @@ version = 'redchannel'
 saved_classifier_filename = '../classifiers/casia.pkl'
 
 # load or recompute train features
-load_train_features = True
+load_train_features = False
 # retrain or load classifier
 load_classifier = False
 # load or recompute test features
-load_test_features = True
+load_test_features = False
 
-def get_train_features_and_labels(load_train_features):
+def get_train_features_and_labels(load_train_features, mlbp_feature_computer):
     saved_realfaces_train_features_filename = '../featuresVectors/casia_realfaces_features_' + version + extension
     saved_spooffaces_train_features_filename = '../featuresVectors/casia_spooffaces_features_' + version + extension
 
@@ -52,19 +55,25 @@ def get_train_features_and_labels(load_train_features):
 
     return (train_features, train_labels)
 
-def get_test_features_and_labels(load_test_features):
+def get_test_features_and_labels(load_test_features, mlbp_feature_computer):
     saved_realfaces_test_features_filename = '../featuresVectors/casia_realfaces_test_features_' + version + extension
     saved_spooffaces_test_features_filename ='../featuresVectors/casia_spooffaces_test_features_' + version + extension
 
     if not load_test_features:
         real_features_test = dbfeatures.compute_realface_features_casia(mlbp_feature_computer,train=False)
+        print("Computed real test features")
         joblib.dump(real_features_test,saved_realfaces_test_features_filename)
+        print("Saved real test features")
 
         spoof_features_test = dbfeatures.compute_spoofface_features_casia(mlbp_feature_computer, train=False)
+        print("Computed spoof test features")
         joblib.dump(spoof_features_test, saved_spooffaces_test_features_filename)
+        print("Saved spoof test features")
     else:
         real_features_test = joblib.load(saved_realfaces_test_features_filename)
+        print("Loaded real test features")
         spoof_features_test = joblib.load(saved_spooffaces_test_features_filename)
+        print("Loaded spoof test features")
 
     test_labels_real = [1 for _ in range(len(real_features_test))]
     test_labels_spoof = [-1 for _ in range(len(spoof_features_test))]
@@ -78,7 +87,12 @@ def main():
     # descriptor computer
     mlbp_feature_computer = feature_computer.FrameFeatureComputer(features.MultiScaleLocalBinaryPatterns((8, 1), (8, 2),
                                                                                                                (16, 2)))
-    (train_features, train_labels) = get_train_features_and_labels(load_train_features)
+    (train_features, train_labels) = get_train_features_and_labels(load_train_features, mlbp_feature_computer)
+
+    #train_features = map(
+    #    lambda fv: fv[:100],
+    #    train_features
+    #)
 
     if not load_classifier:
         '''
@@ -86,24 +100,31 @@ def main():
             {'C': [0.0001, 0.001, 0.01], 'kernel':['linear'], 'class_weight':['balanced', None]},
             {'C': [0.0001, 0.001, 0.01], 'kernel':['rbf'],'gamma':[0.0001, 0.001], 'class_weight':['balanced', None]}
         ]
+        
+        param_grid = {'C':[0.0001, 0.01,1], 'kernel':['rbf'], 'class_weight':['balanced', None], 'gamma':[0.0001,
+                                                                                                             0.1, 10]}
         '''
-        param_grid = {'C':[0.0001, 0.001, 0.01], 'kernel':['linear'], 'class_weight':['balanced', None]}
+        param_grid = {'C':[0.000001, 0.01,1, 10, 100], 'kernel':['linear'], 'class_weight':['balanced']}
 
-        #clf = GridSearchCV(svm.SVC(verbose=True, probability=True), param_grid, verbose=True, n_jobs=4)
-        clf = svm.SVC(verbose=True, probability=True, C = 0.001, kernel='linear', class_weight='balanced')
-        #clf = svm.SVC(verbose=True, probability=True, C = 0.001, kernel='rbf', gamma=0.1, class_weight='balanced')
+        clf = GridSearchCV(svm.SVC(verbose=True, probability=True), param_grid, verbose=True, n_jobs=4)
+        #clf = svm.SVC(verbose=True, probability=True, C = 0.001, kernel='linear', class_weight='balanced')
+        #clf = svm.SVC(verbose=True, probability=True, C = 0.01, kernel='rbf', gamma=0.1, class_weight='balanced')
 
         clf.fit(train_features, train_labels)
 
         #print("Best estimator found by grid search:")
         #print(clf.best_estimator_)
 
-        joblib.dump(clf, saved_classifier_filename)
+        joblib.dump(clf, saved_classifier_filename + 'linear')
     else:
         clf = joblib.load(saved_classifier_filename)
 
 
-    (test_features, test_labels) = get_test_features_and_labels(load_test_features)
+    (test_features, test_labels) = get_test_features_and_labels(load_test_features, mlbp_feature_computer)
+    #test_features = map(
+    #    lambda fv : fv[:100],
+    #    test_features
+    #)
     test_labels_bin = label_binarize(test_labels, classes=[-1,1])
 
 
