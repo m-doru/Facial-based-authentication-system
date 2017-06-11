@@ -141,4 +141,13 @@ In order to determine the best value for the face distance threshold which, as d
 
 \textbf{The third experiment} differed from the first two in that we selected a smaller number of identities but we increased the number of faces per identity. This way we used the online available MS-Celeb-1M sample data containing \textbf{14} identities with approximately \textbf{98} faces per identity. Using this dataset, we had about \textbf{1.274} faces combined together in \textbf{810.901} pairs out of which \textbf{66.542} pairs with faces of the same identity and \textbf{744.359} with different identities, result in a ratio of \textbf{0.09} 	same identity to different identities pairs.
 
-As a result of the three experiments, it can be seen that the embedding function that produces the feature vector used to compute the distances has a stable face distance threshold at around \textbf{1.1} which is invariant to number of identities and face images.
+\begin{figure}[H]
+	\captionsetup{width=15cm,font=small}
+	\begin{center}
+		\includegraphics[width=15cm,height=7cm]{face_distance_threshold}
+	\end{center}
+	\caption[Faces distances histograms]{Here are the results for the three experiments: (a) corresponds to a selection of 14 identities with an average of 98 faces per identity. (b) is for 126 identities with an average of 20 faces per identity and (c) is the result for randomly sampling 315 identities with 28 faces per identity.}
+	\label{fig:face_distance_threshold}
+\end{figure}
+
+As a result of the three experiments, it can be seen in figure \ref{fig:face_distance_threshold} that the embedding function that produces the feature vector used to compute the distances has a stable face distance threshold at around \textbf{1.1} which is invariant to number of identities and face images.
