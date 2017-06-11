@@ -1,6 +1,6 @@
 \chapter{Experiments}
 Given that at the core of the application are learning algorithms, the system reliability is determined by the databases from which train and test data is used. Although for the face embedding part we were not able to train the neural network ourselves given the limited computational power at our disposal, for the face validation part, the public domain databases offered us a large choice, the most commonly used ones are described in the following sections with the corresponding experiments. In order to learn the face distance threshold, we used another database, MS-Celeb-1M \cite{guo2016msceleb}, but given it's purpose for training neural networks, we only used a small sample which was enough to give us sufficient information about the optimum value of the parameter.
-\section{Face spoof databases}
+\section{Face spoof databases}\label{section:face_spoof_databases}
 In this section we analyze the accuracy of our LBP-implementation of a face liveness linear SVM classifier method based on the most commonly used anti-spoof face databases available in public domain. We present our intra-database experiments as well as cross-database ones, the latter being considered better in modeling a real use case.
 \subsection{CASIA face antispoofing database }
 CASIA database for face antispoofing was created by the Center of Biometrics and Security Research (CBRS) and is composed by 600 videos divided in three categories: low, normal and high quality of 50 asian subjects, 12 videos for each. Out of the 12 videos, 3 are genuine and 9 are fake.
@@ -120,7 +120,7 @@ $
 
 
 
-\subsection{Cross-database testing}
+\subsection{Cross-database testing}\label{section:cross_database_testing}
 Given that for each of the earlier presented databases, the train and test data were gathered using the same camera and spoof medium, we considered that a cross-database evaluation must also be done to get a better perspective on the reliableness of our implementation. Having at our disposal four databases with different collection parameters, we were able to run four tests where the data from three databases was used to train the SVM and then tested on the test data of the fourth. 
 \begin{figure}[H]
 	\captionsetup{width=15cm,font=small}
