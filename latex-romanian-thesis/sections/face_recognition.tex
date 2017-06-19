@@ -3,8 +3,8 @@ Approaching the face recognition challenge, we gave up manually crafted features
 \begin{figure}[h]
 	\begin{center}
 		\includegraphics[width=7cm]{facenet-results}
+		\caption[FaceNet pose and ilumination invariance from \cite{SchroffKP15}]{Results presented in \cite{SchroffKP15} regarding the pose and ilumination invariance of the FaceNet system. As can be observed, there is a significant difference in distance between faces on the same line corresponding to the same identity and faces on different lines.}
 	\end{center}
-	\caption[FaceNet pose and ilumination invariance from \cite{SchroffKP15}]{Results presented in \cite{SchroffKP15} regarding the pose and ilumination invariance of the FaceNet system. As can be observed, there is a significant difference in distance between faces on the same line corresponding to the same identity and faces on different lines.}
 \end{figure}
 \subsection{Triplet loss}
 As already stated, the FaceNet system is based on a convolutional neural network architecture. Treating the model details as a black box, the task required a form of evaluation that would reflect the desired result in the matter of face verification, recognition and clustering. As described in \cite{SchroffKP15} the target was to find an embedding $f(x)$ defined on the space of face images and into a feature space $\rm I\!R^{d}$ where the square distance between all images of the same face to be small regardless of imaging conditions and large between images of faces corresponding to different identities. Another constraint on $f(x)$ was to live on the $d$-dimensional hypersphere, meaning $||f(x)||_{2}=1$. As opposed to other losses, the triplet loss does not try to enforce the embedding on a single point but conducts the mapping of the same identity faces on a manifold while still allows a discriminative distance between faces of different identity. 
@@ -12,8 +12,8 @@ As already stated, the FaceNet system is based on a convolutional neural network
 \begin{figure}[h]
 	\begin{center}
 		\includegraphics[width=15cm]{triplet-loss}
+		\caption[Triplet loss visualisation]{Visual representation of the triplet loss as presented in \cite{SchroffKP15}. It exemplifies how, through the process of learning, faces of the same identity (anchor and positive) are brought closer while faces of different identities (anchor and negative) are drifted apart }
 	\end{center}
-	\caption[Triplet loss visualisation]{Visual representation of the triplet loss as presented in \cite{SchroffKP15}. It exemplifies how, through the process of learning, faces of the same identity (anchor and positive) are brought closer while faces of different identities (anchor and negative) are drifted apart }
 \end{figure}
 
 In other words, the purpose of the triplet loss is to ensure that an anchor image $x_{i}^{a}$ of a face is closer to all other images of the same face $x_{i}^{p}$ than any other image of different identity face $x_{i}^{n}$. This can be written as
@@ -23,7 +23,6 @@ In other words, the purpose of the triplet loss is to ensure that an anchor imag
 \begin{align}
 L = \sum_{i}^{N} [||f(x_{i}^{a}) - f(x_{i}^{p})||_{2}^{2} - ||f(x_i^a) - f(x_i^n)||_{2}^{2} + \alpha]_{+}
 \end{align}
-\textbf{Here I could write more about the triplet selection}
 
 \subsection{CNN architecture}
 There were two Convolutional Network Architectures that the FaceNet experimented with: first one was based on Zeiller\&Fergus \cite{ZeilerF13} to which, based on \cite{LinCY13}, Schroff et al. added $1 \times 1 \times d$ convolutional layers between the standards convolutional layers, resulting in 22 layers deep model as can be seen in Table \ref{zeilerfergus-architecture};

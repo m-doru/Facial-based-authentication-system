@@ -1,4 +1,5 @@
 \thispagestyle{plain}
+\setlength{\parskip}{1.5em}
 
 \vspace*{\fill}
 
@@ -6,11 +7,10 @@
 	\Large \textbf{Abstract}	
 \end{center}
 
-Face recognition has been the target of extensive research in the last half decade given the new ways of approaching the problem resulted from advances in deep learning by making possible end-to-end learning of the task using Convolutional Neural Networks and from the growth in size of available training datasets necessary for these methods to reach state of the art performance. 
+Face recognition is a well known problem extensively researched in the last half decade. Current state-of-the-art approaches that tackle this problem rely on the deep learning paradigm. They train in an end-to-end manner convolutional neural network (CNN) with millions of examples such that the trained CNN discriminates between pairs of same and different faces. 
 
-In the project this paper will further describe, we employed such a deep learning architecture in order to create a facial-based authentication system to which, given it's security applications, we added a component for face spoof validation based on Local binary patterns in order to combat attacks as printed photos or replayed videos.
+In the project this thesis will further describe, we employed such a deep learning architecture in order to create a facial-based authentication system. Given it's security applications, we added a component for face spoof validation based on Local Binary Patterns in order to combat attacks as printed photos or replayed videos.
 
-We succeeded in making a reliable face recognition system that could be ready for real world applications by using Openface \cite{amos2016openface} - the open-source implementation of the FaceNet \cite{SchroffKP15} architecture which achieved a state of the art accuracy of \textbf{99.63\%}  on the Labeled Faces in the Wild (LFW) dataset. We also managed to achieve good results for faces validation on data from the same database but the data available did not have a good generalization power therefore this part of the system cannot be yet found suitable for use in production.
-
+We succeeded in making a reliable face recognition system that could be ready for real world applications. In order to do so, we used Openface \cite{amos2016openface} - the open-source implementation of the FaceNet \cite{SchroffKP15} CNN architecture which achieved a state of the art accuracy of \textbf{99.63\%} on Labeled Faces in the Wild (LFW) dataset. We adapted the Openface implementation to detect all the faces in an image. In terms of face validation, our implementation attains good results on data from the same database. Because the data available does not have a good generalization power, this part of the system cannot be yet found suitable for use in production.
 
 \vspace*{\fill}
