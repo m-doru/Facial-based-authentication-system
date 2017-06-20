@@ -1,0 +1,17 @@
+\thispagestyle{plain}
+\setlength{\parskip}{1.5em}
+
+\vspace*{\fill}
+
+\begin{center}
+	\Large \textbf{Abstract}	
+\end{center}
+
+Recunoașterea facială este o problemă foarte cunoscută care a fost cercetată in mod special în ultima jumătate de deceniu. Modalitățile actuale de abordare a acestei probleme se bazează pe paradigma de învățare \textit{deep}. Ele antreanează de la un capăt la altul rețele neuronale convoluționale (CNN) cu milioane de example astfel încât rețeaua antrenată sa discrimineze între perechi de fețe identice si diferite.
+
+În proiectul pe care prezenta lucrare de licență își propune sa îl descrie, am folosit o asemenea arhitectura de tip \textit{deep} pentru a crea un sistem de autentificare facială. Având în vedere aplicațiile în securitate ale acestuia, am adăugat o componentă de validare a fețelor bazată pe modele locale binare (LBP) pentru a combate atacuri precum poze printate sau videoclipuri redate pe dispozitive mobile
+
+Am reușit să realizăm un sistem de recunoaștere faciala de încredere care se pretează pentru utilizarea în producție. În aces sens, am utilizat implementarea public disponibila Openface \cite{amos2016openface} a arhitecturii de tip CNN FaceNet \cite{SchroffKP15} care a atins precizia de \textbf{99.63\%} pe setul de date Labeled Faces in the Wild. 
+În ce priveste validarea facială, am implementat construirea pe baza modelelor binare locale (LBP) uniforme a vectorului de caracteristici. Acesta a fost utilizat ca date de intrare pentru o mașină cu vector suport pentru a obține clasificarea ca față reală sau atac. Implementarea noastră a dat rezultate bune pe seturi de date din aceeași bază de date. Deoarece datele public disponibile nu au o putere de generalizare corespunzătoare, această parte a sistemului nu poate încă fi considerată utilizabilă în producție.
+
+\vspace*{\fill}

@@ -1,7 +1,7 @@
 \section{Face validation}
 The problem of face validation in our context is represented by determining whether the face detected in an image belongs to a live subject or it is on a printed photo, replayed video or 3D mask. Various methods to combat such attacks have been studied and they include: face motion analysis \cite{BharadwajDVS13, PanSWL07, TirunagariPWISH15} like eye blink, lip or head movement that is effective in combating printed photos attack, face 3D shape or depth analysis \cite{MarsicoNRD12, LagorioTCFS13} which is useful in combating 2D attacks but may require additional devices, face texture analysis \cite{MaattaHP11} which have computationally low costs and are fast but might encounter difficulties in generalizability. Our implementation of the face spoof detector is based on the work of Maatta et al. presented in \cite{MaattaHP11} where the proposed approached is based on the analysis of face texture using multi-scale local binary patterns (MLBP).
 \subsection{Basic Local Binary Patterns}
-The LBP is a type of visual descriptor used for texture identification and classification. Firstly presented by Ojala and Harwood in 1996 in \cite{ojala1996comparative}, it is a particular case of the Texture Unit model described in 1990 in \cite{HeWang90}. The idea proposed by He\&Wang in \cite{HeWang90} was to compute the local texture for each pixel in an image based on a surrounding neighborhood of $3\times3$ pixels. The way to compute it was to compare the intensity of the central pixel $V_c$ with the intensity of each of the 8 neighbour pixels $V_{i=\overline{1,8}}$ so resulting a corresponding texture unit TU with 8 elements calculated as this:
+The LBP is a type of visual descriptor used for texture identification and classification. Firstly presented by Ojala and Harwood in 1996 in \cite{ojala1996comparative}, it is a particular case of the Texture Unit model described in 1990 in \cite{HeWang90}. The idea proposed by He\&Wang in \cite{HeWang90} is to compute the local texture for each pixel in an image based on a surrounding neighborhood of $3\times3$ pixels. The way to compute it is to compare the intensity of the central pixel $V_c$ with the intensity of each of the 8 neighbour pixels $V_{i=\overline{1,8}}$ so resulting a corresponding texture unit TU with 8 elements calculated as this:
 \begin{align}
 	E_i = \begin{cases}
 	0, & if\ V_c > V_i \\
@@ -28,7 +28,7 @@ E_i = \begin{cases}
 \end{align}
 which means that the texture unit will contain 8 base 2 values
 
-\begin{figure}[h]
+\begin{figure}[H]
 	\begin{center}
 		\includegraphics[width=15cm]{visual-lbp}
 		\caption[Visual representation of \textbf{LBP} computation]{An intuitive graphical representation of obtaining the LBP number from a $3\times3$ pixel cell presented in \cite{lu2014divided}}
@@ -36,21 +36,21 @@ which means that the texture unit will contain 8 base 2 values
 \end{figure}
 
 \subsection{Variations of the LBP}
-In 2002, Ojala et al. described in \cite{OjalaPM02} an extension of the LBP from the square of $3\times3$ pixels to any size neighbourhood by considering a circle around the central pixel and sampling it's neighbours on this circle. This adds two parameters to the LBP, one being the radius $R$ of the circle and the second one being the number of sampled points $P$ on the circle.  With this new definition, we can formulate the LBP operator as being
+In 2002, Ojala et al. describes in \cite{OjalaPM02} an extension of the LBP from the square of $3\times3$ pixels to any size neighbourhood by considering a circle around the central pixel and sampling it's neighbours on this circle. This adds two parameters to the LBP, one being the radius $R$ of the circle and the second one being the number of sampled points $P$ on the circle.  With this new definition, we can formulate the LBP operator as being
 \begin{align}
 	LBP_{R,P} = \sum_{0}^{P-1}E_p*2^p
 \end{align}
 
-\begin{figure}[h]
+\begin{figure}[H]
 	\begin{center}
 		\includegraphics[width=15cm]{lbps-different-radius-sample}
 		\caption[Enhanced LBP visualisation]{Here we visualize the enhaced version of LBP presented in \cite{OjalaPM02}. (a) LBP with R = 1 and P = 4. (b) LBP with R = 1 and P = 8. (c) LBP with R = 2 and P = 8}
 	\end{center}
 \end{figure}
-As can be observed the $LBP_{R,P}$ operator produces $2^P$ values corresponding to the $2^P$ possible patterns in the texture unit TU. As the P grows linearly, the number of values produced grows exponentially therefore it is obvious that it can create computational problems for values of P not too big. 
-One observation that helps reduce the number of values needed to be taken into consideration is that some patterns appear more frequent than others. As observed in \cite{OjalaPM02} the type of patterns termed "uniform" provide a vast majority, up to 90\%, of the $3\times3$ texture patterns in examined suface textures. The term "uniform" mean that there is some kind of uniformity in the circular presentation of the LBP translated into a limited number of transitions or discontinuities of 0's and 1's. For face validation we focused on using uniform LBP with at most 2 transitions with it's corresponding operator noted as $LBP_{R,P}^{u2}$. The difference between the number of possible values of the two operators is consistent: where the $LBP_{R,P}$ had a total number of $2^P$ patterns, the $LBP_{R,P}^{u2}$ has only $P*(P-1)+2$ possible patterns.
+The $LBP_{R,P}$ operator produces $2^P$ values corresponding to the $2^P$ possible patterns in the texture unit TU. As the P grows linearly, the number of values produced grows exponentially therefore it is obvious that it can create computational problems for values of P not too big. 
+One observation that helps reduce the number of values needed to be taken into consideration is that some patterns appear more frequent than others. As observed in \cite{OjalaPM02} the type of patterns termed "uniform" provide a vast majority, up to 90\%, of the $3\times3$ texture patterns in examined suface textures. The term "uniform" means that there is some kind of uniformity in the circular presentation of the LBP translated into a limited number of transitions or discontinuities of 0's and 1's. For face validation we focused on using uniform LBP with at most 2 transitions with it's corresponding operator noted as $LBP_{R,P}^{u2}$. The difference between the number of possible values of the two operators is consistent: where the $LBP_{R,P}$ had a total number of $2^P$ patterns, the $LBP_{R,P}^{u2}$ has only $P*(P-1)+2$ possible patterns.
 Another way to enhance the results is to use multiple LBPs at different scale, this resulting in a so-called multi-scale local binary pattern (MLBP).
 
 \subsection{Face classification}
-As we stated earlier, we based our face spoof detection on the local binary patterns, specifically on multi-scale LBP with parameters \{(8,1), (8,2), (16,2)\}. In order to create a feature vector from the uniform LBP so that it can be used as input for a classifier, sliding window approach with size $32\times32$ with 16 pixels horizontal and none vertical overlap and computed for each window a histogram from the $LBP_{R,P}^{u2}$ values. The number of bins of these histograms is set to $P*(P-1) + 2$ to which it is added an additional bin for the values that were not uniform. The resulted vector of the concatenation of the histograms for all windows represents the feature vector of the image. A Support Vector Machine (SVM) with linear or rbf kernel can later be used in order to classificate the feature vector as corresponding to a live or a spoof face.
+As we stated earlier, we base our face spoof detection on the local binary patterns, specifically on multi-scale LBP with parameters \{(8,1), (8,2), (16,2)\}. In order to create a feature vector from the uniform LBP, we slide a window with size $32\times32$ with 16 pixels horizontal and none vertical overlap and compute for each window a histogram from the $LBP_{R,P}^{u2}$ values. The number of bins of these histograms is set to $P*(P-1) + 2$ to which we add an additional bin for the values that are not uniform. The resulted vector of the concatenation of the histograms for all windows represents the feature vector of the image. We use a Support Vector Machine (SVM) with linear kernel in order to classify the feature vector as corresponding to a live or a spoof face.
 

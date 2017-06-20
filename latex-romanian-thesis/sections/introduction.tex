@@ -26,7 +26,7 @@ An operator was required to mark specific landmarks like the individual's  hairl
 As the limits imposed by technology dropped and the potential in creating reliable facial recognition systems became worth taking into consideration, interest was shown by the Defense Advanced Research Products Agency (DARPA) which sponsored the Face Recognition Technology Evaluation (FERET) \cite{PhillipsJMHRSRP00} from 1993 to 1997 encouraging the development of face recognition algorithms and technologies by assessing the prototypes of face recognition systems. This project helped to a great extent to create a market of commercially available products.
 Built upon the work of FERET, the Face Recognition Vendor Test \cite{PhillipsGMBTB03} developed by the National Institute of Standards and Technology \cite{FaceNist} along with DARPA and performed several times since 2000, it provides independent government evaluations of commercially available and prototype face recognition technologies and also helps identify future research direction for the face recognition scientific community.
 
-Relative to the one of the most reliable tests in the field based on the publicly available Labeled Faces in the Wild database, the current state of the art is held by deep learning approaches. We enlist some of the best results:
+We now present the results relative to one of the most reliable tests in the field. It based on the publicly available Labeled Faces in the Wild database. The current state of the art is held by deep learning approaches. We enlist some of the best results:
 \begin{itemize}
 	\item PingAn AI Lab with a mean accuracy of 0.9980 and std 0.0016
 	\item Baidu with a mean accuracy of 0.9977 and std 0.0006
@@ -43,7 +43,14 @@ Relative to the one of the most reliable tests in the field based on the publicl
 	\item \textbf{face validation} where we present the Local Binary Pattern, how to compute a feature descriptor based on it with the help of histograms and it's use in face validation
 \end{itemize}
 
-\textbf{In Chapter 3} we present our implementation of a face authentication system implemented in Python and based on a powerful set of open-source tools as OpenCV\cite{opencv_library}, Scikit-learn\cite{scikit-learn}, Scikit-image\cite{scikit-image} and Openface\cite{amos2016openface} that are well known and sustained both in the academically and industry fields. We create a command-line application that processes an image taken from the laptop camera of size $480\times640$ in 0.3 seconds. Our application detects the faces, verifies if they are live of spoof attacks and recognizes them as being known to the system or not.
+\textbf{In Chapter 3} we present our implementation of a face authentication system based on Python and on a powerful set of open-source tools as OpenCV\cite{opencv_library}, Scikit-learn\cite{scikit-learn}, Scikit-image\cite{scikit-image} and Openface\cite{amos2016openface}. These are well known frameworks and sustained both in the academically and industry fields. We create a command-line application consisting of the following pipeline that takes roughly $0.3$ seconds to iterate through:
+\begin{itemize}
+	\item capture an image from the laptop camera of size $480\times640$ using OpenCV
+	\item detect the faces in the image using dlib face predictor that returns all face bounding boxes
+	\item verify if they are live of spoof using our implementation of a face validator based on Local Binary Patterns and a Support Vector Machine with linear kernel
+	\item compute the embedding of each face using the already trained Convolutional Neural Network of Openface
+	\item recognize the faces by measuring the Euclidean distance between the embeddings of the detected faces and the ones already in the database
+\end{itemize}
 
 \textbf{In Chapter 4} we present the details of four databases that our face validation experiments are based on. We report the results for each of their evaluation protocols as well as a different cross-database evaluation in order to better simulate a real life use case. Additionally, we present another experiment in which we try to determine a threshold parameter for the face embedding function that is used in making the choice of whether two faces belong to the same identity.
 
