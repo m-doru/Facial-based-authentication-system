@@ -60,7 +60,9 @@ def processFrame(rgb_image, align, faceSpoofValidator, args):
     start = time.time()
 
     # Get all bounding boxes
+    face_detection_start = time.time()
     bb = align.getAllFaceBoundingBoxes(rgb_image)
+    print("Face detection took {}".format(time.time() - face_detection_start))
 
     if bb is None:
         return None
@@ -88,7 +90,10 @@ def processFrame(rgb_image, align, faceSpoofValidator, args):
     facesWithValidation= []
 
     for i, alignedFace in enumerate(alignedFaces):
-        if faceSpoofValidator.validate_face(alignedFace):
+        face_validation_start = time.time()
+        face_validity = faceSpoofValidator.validate_face(alignedFace)
+        print("Face validation took {}".format(time.time() - face_validation_start))
+        if face_validity:
             facesWithValidation.append((alignedFace, bb[i], 1))
         else:
             facesWithValidation.append((alignedFace, bb[i], 0))
@@ -99,11 +104,11 @@ def main():
     parser = initializeParser()
     args = parser.parse_args()
 
-    '''
-    video_capture = cv2.VideoCapture('/home/doru/Desktop/Licenta/Implementation/databases/MSU_MFSD/' +
-                                     'MSU-MFSD/scene01/real/real_client023_android_SD_scene01.mp4')
-    '''
-    video_capture = cv2.VideoCapture(0)
+
+    video_capture = cv2.VideoCapture('/home/doru/Desktop/Licenta/Implementation/databases/cbsr_antispoofing'
+                                     '/test_release/13/3.avi')
+
+    #video_capture = cv2.VideoCapture(0)
     video_capture.set(3, args.width)
     video_capture.set(4, args.height)
 
@@ -112,12 +117,13 @@ def main():
     align = openface.AlignDlib(args.dlibFacePredictor)
     faceSpoofValidator = faceSpoofValidation.FaceSpoofValidator(
             features.MultiScaleLocalBinaryPatterns((8,1), (8,2), (16,2)),
-            'classifiers/classifier_tested_on2.pkl')
+            'classifiers/classifier_tested_on1.pkl')
     while True:
         ret, frame = video_capture.read()
 
         #cv2.imshow('cameraFeed', frame)
         print("Processing frame number {}".format(frameNr))
+        print("With size {}".format(frame.shape))
         frameNr += 1
 
         if ret == False:
@@ -142,8 +148,6 @@ def main():
                 cv2.rectangle(frame, ll, ur, color=(0, 255, 0),thickness=3)
             else:
                 cv2.rectangle(frame, ll, ur, color=(0, 0, 255), thickness=3)
-
-        print('Faces validation took {}'.format(time.time() - face_validation_start))
 
         cv2.imshow('face', frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):

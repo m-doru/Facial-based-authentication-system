@@ -27,10 +27,10 @@ class FaceSpoofValidator:
         print(self.clf.predict_proba([feature_vector]))
         pred_confidence = self.clf.predict_proba([feature_vector])
 
-        if pred_confidence[0][0] < 0.5:
-            return True
-        else:
+        if pred_confidence[0][0] < 0.65:
             return False
+        else:
+            return True
 
     def validate_frame(self, frame):
         cv2.imshow('validating frame', frame)

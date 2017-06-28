@@ -7,6 +7,7 @@ import itertools
 import os
 import re
 import time
+import random
 
 import joblib
 import matplotlib.pyplot as pyplot
@@ -16,11 +17,23 @@ import matplotlib.patches as mpatches
 def get_faces_with_ids(path_to_db, verbose = False):
     face_id_multiple_pattern = re.compile(".+[1-9]+\.[a-z]{3}")
     faces = []
+    identities = 0
+    faces_per_identity = []
     for root, dirs, _ in os.walk(path_to_db):
         for dir in dirs:
             path_to_subject = os.path.join(path_to_db, dir)
+            # we sample the data so that we take 30 photos from 3% of the faces in an random way so that the
+            # distribution it is kept
+            if random.random() <= 0.96:
+                continue
+
+            identities += 1
+            faces_taken = 0
             for _, _, imgs in os.walk(path_to_subject):
                 for img_file in imgs:
+                    if random.random() > 0.3:
+                        continue
+                    faces_taken += 1
                     if verbose:
                         print('Processing subject {} => {}'.format(dir, img_file))
                     if face_id_multiple_pattern.match(img_file) is not None:
@@ -36,9 +49,19 @@ def get_faces_with_ids(path_to_db, verbose = False):
                         faces.append(face)
 
                 break
+            faces_per_identity.append(faces_taken)
 
         break
-
+    print("We randomly selected " + str(identities))
+    print("With an average of faces per identity of: " + str(sum(faces_per_identity)/len(faces_per_identity)))
+    print("With same identity faces {}".format(sum(faces_per_identity)))
+    perechi_fete_identice = 0
+    for i in range(len(faces_per_identity)):
+        perechi_fete_identice += faces_per_identity[i]*(faces_per_identity[i]-1)/2
+    print("Number of pairs same identity {}".format(perechi_fete_identice))
+    print("Number of faces {}".format(len(faces_per_identity)))
+    print(faces_per_identity)
+    print("Totalling {}".format(len(faces)))
     return faces
 
 def get_face_pairs(faces, examples_per_subject):
@@ -65,35 +88,44 @@ def get_faces_distances(faces, examples_per_subject):
     take_all = examples_per_subject <= 0
     filtered_faces = []
     used_faces = {}
-    for face in faces:
-        if face.id not in used_faces:
-            used_faces[face.id] = 1
-        if used_faces[face.id] < examples_per_subject or take_all:
-            filtered_faces.append(face)
-            used_faces[face.id] += 1
-
+    if not take_all:
+        for face in faces:
+            if face.id not in used_faces:
+                used_faces[face.id] = 1
+            if used_faces[face.id] < examples_per_subject:
+                filtered_faces.append(face)
+                used_faces[face.id] += 1
+    else:
+        filtered_faces = faces
     same_id_distances = []
     diff_id_distances = []
+    count = 0
     for (face1, face2) in itertools.combinations(filtered_faces, 2):
         if face1.id == face2.id:
             same_id_distances.append(face1.compute_distance(face2.representation))
         else:
             diff_id_distances.append(face1.compute_distance(face2.representation))
+        if count%10000 == 0:
+            print("We processed {}0.000 distances".format(count/10000))
+        count += 1
 
     return (same_id_distances, diff_id_distances)
 
-def main(load_faces=False, load_distances=False, examples_per_subject=None):
-    saved_faces_filename = "sorted_face_pairs.pkl"
+def main(load_faces=False, load_distances=False, examples_per_subject=-1):
+    saved_faces_filename = "ids_sorted_face_pairs.pkl"
     if load_faces is not None:
         if not load_faces:
-            #path_to_db = '../databases/MsCelebsV1-Faces-Cropper-07'
-            path_to_db = '/home/doru/Desktop/MsCelebV1-Faces-Aligned.Samples'
+            path_to_db = '../databases/MsCelebsV1-Faces-Cropper-07'
+            #path_to_db = '/home/doru/Desktop/MsCelebV1-Faces-Aligned.Samples'
             faces = get_faces_with_ids(path_to_db, True)
-            joblib.dump(faces, saved_faces_filename)
+            print("Faces read")
+            joblib.dump(faces, str(len(faces))+saved_faces_filename)
+            print("Faces loaded")
         else:
             faces = joblib.load(saved_faces_filename)
             print("Faces loaded")
 
+    print("We have {}".format(len(faces)))
 
     saved_distances_same_id_filename = "same_id_distances_"+str(examples_per_subject)+".pkl"
     saved_distances_diff_id_filename = "diff_id_distances_"+str(examples_per_subject)+".pkl"
@@ -102,10 +134,12 @@ def main(load_faces=False, load_distances=False, examples_per_subject=None):
                                 or os.path.exists(saved_distances_diff_id_filename)):
         (same_id_distances, diff_id_distances) = get_faces_distances(faces, examples_per_subject)
         print("Computed distances")
+        '''
         joblib.dump(same_id_distances, saved_distances_same_id_filename)
         print("Saved same id distances")
         joblib.dump(diff_id_distances, saved_distances_diff_id_filename)
         print("Saved different id distances")
+        '''
     else:
         with open(saved_distances_same_id_filename, 'rb') as f:
             same_id_distances = joblib.load(f)
@@ -131,5 +165,5 @@ def main(load_faces=False, load_distances=False, examples_per_subject=None):
 
 if __name__ == "__main__":
     start = time.time()
-    main(True, False,10)
+    main(False, False)
     print("Processing took {}".format(time.time() - start))

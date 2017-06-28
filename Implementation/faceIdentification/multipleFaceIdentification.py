@@ -24,7 +24,7 @@ parser.add_argument('--networkModel', type=str, help="Path to Torch network mode
 parser.add_argument('--imgDim', type=int,
                     help="Default image dimension.", default=96)
 parser.add_argument('--verbose', action='store_true')
-parser.add_argument('--scale', type=float, default=0.5, help='The scale with which the webcam frames will be '
+parser.add_argument('--scale', type=float, default=1, help='The scale with which the webcam frames will be '
                                                              'resized')
 parser.add_argument('--webcam', type=int, default=0, help='Specify which camera to be used for input(0 = webcam, '
                                                           '1 = usb')
@@ -156,7 +156,9 @@ def loadKnownFaces(path):
     return knownRepresentations
 
 def main():
-    cameraFeed = cv2.VideoCapture(args.webcam)
+    #cameraFeed = cv2.VideoCapture(0)
+    cameraFeed = cv2.VideoCapture('/home/doru/Desktop/Licenta/Implementation/databases/cbsr_antispoofing/test_release'
+                                  '/13/1.avi')
 
     knownFacesRep = loadKnownFaces(args.knownFacesDir)
 
@@ -165,6 +167,7 @@ def main():
 
         ret, origFrame = cameraFeed.read()
 
+        print("Dimmension of the frame is {}".format(origFrame.shape))
         if ret == False:
             break
         start = time.time()
@@ -201,7 +204,9 @@ def main():
 
             face = alignedFaces[i]
 
+            face_rep_start = time.time()
             faceRep = net.forward(face)
+            print("Passing through the network takes {}".format(time.time() - face_rep_start))
 
             recognized = False
 
