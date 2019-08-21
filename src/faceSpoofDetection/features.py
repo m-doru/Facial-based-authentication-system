@@ -1,5 +1,6 @@
 import numpy as np
 from skimage import feature
+
 from vlfeat import vl_dsift
 
 FRAME_SIZE = (128, 128)

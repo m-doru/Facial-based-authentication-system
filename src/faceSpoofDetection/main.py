@@ -6,9 +6,9 @@ import time
 
 import cv2
 
-import faceSpoofValidation
-import features
-import openface
+from . import faceSpoofValidation
+from . import features
+from . import openface
 
 fileDir = os.path.dirname(os.path.realpath(__file__))
 modelDir = os.path.join(fileDir, "..", "models")

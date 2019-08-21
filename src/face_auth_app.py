@@ -2,18 +2,19 @@ import argparse
 import time
 import sys
 import os
-from faceSpoofDetection import faceSpoofValidation
-from faceSpoofDetection import features
 
-fileDir = os.path.dirname(os.path.realpath(__file__))
-sys.path.append(os.path.join(fileDir, ".."))
+file_dir = os.path.dirname(os.path.realpath(__file__))
 
 import cv2
 import openface
 import numpy as np
+
 from os import walk
 
-modelDir = os.path.join(fileDir, "models")
+from faceSpoofDetection import faceSpoofValidation
+from faceSpoofDetection import features
+
+modelDir = os.path.join(file_dir, "models")
 dlibModelDir = os.path.join(modelDir, "dlib")
 openfaceModelDir = os.path.join(modelDir, "openface")
 
@@ -187,7 +188,7 @@ def computeKnownFacesRepresentation(path):
 
 def loadKnownFaces(path):
     startTimeLoadingKnownFaces = time.time()
-    path = os.path.join(fileDir, path)
+    path = os.path.join(file_dir, path)
 
     picklePath = os.path.join(path, "reps.pk")
     """

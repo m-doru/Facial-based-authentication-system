@@ -1,8 +1,11 @@
 from __future__ import print_function
-import cv2
-import features
+
 import pickle
 import joblib
+
+import cv2
+
+from . import features
 
 
 class FaceSpoofValidator:
