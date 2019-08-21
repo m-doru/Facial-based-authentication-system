@@ -1,0 +1,8 @@
+ROC AUC = 0.903
+EER = 0.18
+Accuracy scode = 0.84
+Confusion matrix
+[
+    2677 410
+    244 799
+]

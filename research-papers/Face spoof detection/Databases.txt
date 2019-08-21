@@ -1,0 +1,4 @@
+Public databases:
+-Print Attack & Replay Attack
+-Casia Face Anti-Spoofing Database and Idiap - problema cu ele e ca folosesc ori camera cu rezolutie joasa care nu mai sunt folosite ori DSLR-uri care sunt scumpe
+-MSU Mobile Spoof face - baza de date prezentata si in articolul cu recunoasterea faciala pe mobil

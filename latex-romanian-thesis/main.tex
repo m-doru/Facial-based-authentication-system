@@ -5,7 +5,7 @@
 \usepackage[T1]{fontenc}
 \usepackage{combelow}% provides \cb to place comma below character
 \usepackage{newunicodechar}
-\usepackage[romanian]{babel}
+\usepackage[english]{babel}
 \usepackage{graphicx}
 \usepackage{subfiles}
 \usepackage{blindtext}
@@ -18,7 +18,14 @@
 \usepackage{float}
 \usepackage[toc,page]{appendix}
 \usepackage{subcaption}
+\usepackage{wrapfig}
+\usepackage[labelfont=bf]{caption}
 \usepackage{makeidx}
+\usepackage{afterpage}
+\usepackage{gensymb}
+\usepackage{amsmath}
+\usepackage{url}
+\usepackage{hyperref}
 \usepackage{geometry}
 \geometry{
 	a4paper,
@@ -29,45 +36,74 @@
 	right=25mm,
 }
 
+\setlength{\belowcaptionskip}{20pt}
+
 % Line spacing
-\renewcommand{\baselinestretch}{1.35} 
-\renewcommand\appendixtocname{Anexe}
-\renewcommand\appendixname{Anexe}
-\renewcommand\appendixpagename{Anexe}
+\renewcommand{\baselinestretch}{1.5} 
+\renewcommand\appendixtocname{Anexes}
+\renewcommand\appendixname{Anexes}
+\renewcommand\appendixpagename{Anexes}
+
+\newcommand{\R}{{\textsf{R}\hspace*{-0.9ex}%
+		\rule{0.15ex}{1.5ex}\hspace*{0.9ex}}}
+
+\usepackage{afterpage}
+
+\newcommand\blankpage{%
+	\null
+	\thispagestyle{empty}%
+	\addtocounter{page}{-1}%
+	\newpage}
 
 \graphicspath{{images/}{../images/}}
 
-\newunicodechar{ș}{\cb{s}}
-\newunicodechar{Ș}{\cb{S}}
-\newunicodechar{ț}{\cb{t}}
-\newunicodechar{Ț}{\cb{T}}
-
-\newtheorem{remark}{Observație}[chapter]
-\newtheorem{definition}{Definiție}[chapter]
-\newtheorem{lemma}{Lemă}[chapter]
-\newtheorem{theorem}{Teoremă}[chapter]
+\newtheorem{remark}{Observation}[chapter]
+\newtheorem{definition}{Definition}[chapter]
+\newtheorem{lemma}{Lemma}[chapter]
+\newtheorem{theorem}{Theorem}[chapter]
 
 \makeindex
 
 \begin{document}
 
 \subfile{sections/title}
-\subfile{sections/romanianTitle}
 \restoregeometry
 
 \tableofcontents
+\listoffigures
+\listoftables
 
 \newpage
 
+
 \subfile{sections/abstract}
+\newpage
+\subfile{sections/abstract_romana}
+\newpage
 \subfile{sections/introduction}
 
 \newpage
 
-\bibliographystyle{plain}
-\bibliography{bibliography/list} 
+\subfile{sections/face_detection}
+\subfile{sections/face_alignment}
+\subfile{sections/face_recognition}
+\subfile{sections/face_validation}
+\subfile{sections/svm_cnn}
 
-\printindex
-\subfile{sections/appendix}
+\newpage
+\subfile{sections/application}
+
+\newpage
+
+\subfile{sections/databases}
+
+\newpage
+\subfile{sections/conclusions}
+\newpage
+
+\nocite{*}
+\bibliographystyle{plainurl}
+\bibliography{bibliography/list}
+
 
 \end{document}

@@ -1,1 +1,0 @@
-Datorita protocolului de testare al bazei de date USSA care presupune testarea pe 5 folds si raportarea mediei rezultatelor, nu s-a putut obtine un grafic concludent
