@@ -15,12 +15,11 @@ class FaceSpoofValidator:
         print(face.shape)
 
         face = cv2.resize(face, features.FRAME_SIZE)
-        #matrix = cv2.cvtColor(face, cv2.COLOR_BGR2GRAY)
-        matrix = face[:,:,2]
-        
+        # matrix = cv2.cvtColor(face, cv2.COLOR_BGR2GRAY)
+        matrix = face[:, :, 2]
 
         lbp_feature = self._lbp.compute(matrix)
-        #dsift_feature = self._sift.compute(matrix, 8, 16)
+        # dsift_feature = self._sift.compute(matrix, 8, 16)
 
         feature_vector = lbp_feature
 
@@ -33,9 +32,11 @@ class FaceSpoofValidator:
             return True
 
     def validate_frame(self, frame):
-        cv2.imshow('validating frame', frame)
+        cv2.imshow("validating frame", frame)
 
-        grey_small_frame = cv2.cvtColor(cv2.resize(frame, features.FRAME_SIZE), cv2.COLOR_BGR2GRAY)
+        grey_small_frame = cv2.cvtColor(
+            cv2.resize(frame, features.FRAME_SIZE), cv2.COLOR_BGR2GRAY
+        )
         if self.clf.fit(self._lbp.compute(grey_small_frame)) == 1:
             return True
 

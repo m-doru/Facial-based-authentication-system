@@ -4,23 +4,24 @@ import cv2
 import time
 import numpy as np
 
+
 class Face:
     fileDir = os.path.dirname(os.path.realpath(__file__))
-    modelDir = os.path.join(fileDir,'..', 'models')
-    dlibModelDir = os.path.join(modelDir, 'dlib')
-    openfaceModelDir = os.path.join(modelDir, 'openface')
-    dlipFacePredictor = os.path.join(dlibModelDir, "shape_predictor_68_face_landmarks.dat")
-    networkModel = os.path.join(openfaceModelDir, 'nn4.small2.v1.t7')
+    modelDir = os.path.join(fileDir, "..", "models")
+    dlibModelDir = os.path.join(modelDir, "dlib")
+    openfaceModelDir = os.path.join(modelDir, "openface")
+    dlipFacePredictor = os.path.join(
+        dlibModelDir, "shape_predictor_68_face_landmarks.dat"
+    )
+    networkModel = os.path.join(openfaceModelDir, "nn4.small2.v1.t7")
     aligner = openface.AlignDlib(dlipFacePredictor)
     imgDim = 96
     net = openface.TorchNeuralNet(networkModel, imgDim)
 
-    def __init__(self,id, representation, filepath = None):
+    def __init__(self, id, representation, filepath=None):
         self.id = id
         self.representation = representation
         self.filepath = filepath
-
-
 
     def compute_distance(self, other_rep):
         diff = self.representation - other_rep
@@ -44,9 +45,9 @@ class Face:
         return cls(id=id, representation=representation, filepath=filepath)
 
     @classmethod
-    def _compute_id(cls,filepath):
-        filename = filepath.split(os.pathsep)[-1].split('.')[0]
-        return filename.split('_')[0]
+    def _compute_id(cls, filepath):
+        filename = filepath.split(os.pathsep)[-1].split(".")[0]
+        return filename.split("_")[0]
 
     @classmethod
     def get_net_rep(cls, imgPath, verbose, imgDim, image=None):
@@ -77,8 +78,9 @@ class Face:
         bb = bbs[0]
 
         start = time.time()
-        alignedFace = Face.aligner.align(imgDim, rgbImg, bb,
-                                         landmarkIndices=openface.AlignDlib.OUTER_EYES_AND_NOSE)
+        alignedFace = Face.aligner.align(
+            imgDim, rgbImg, bb, landmarkIndices=openface.AlignDlib.OUTER_EYES_AND_NOSE
+        )
         if alignedFace is None:
             raise Exception("Unable to align image: {}".format(imgPath))
         if verbose:
@@ -87,7 +89,9 @@ class Face:
         start = time.time()
         rep = Face.net.forward(alignedFace)
         if verbose:
-            print("  + OpenFace forward pass took {} seconds.".format(time.time() - start))
+            print(
+                "  + OpenFace forward pass took {} seconds.".format(time.time() - start)
+            )
             print("Representation:")
             print(rep)
             print("-----\n")

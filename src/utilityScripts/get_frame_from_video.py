@@ -1,6 +1,7 @@
 import cv2
 
-def get_frames(video_path, number_of_frames = 1):
+
+def get_frames(video_path, number_of_frames=1):
     video_feed = cv2.VideoCapture(video_path)
 
     frames = []
@@ -15,7 +16,8 @@ def get_frames(video_path, number_of_frames = 1):
     video_feed.release()
     return frames
 
-def save_frames(video_path, save_path, number_of_frames = 1):
+
+def save_frames(video_path, save_path, number_of_frames=1):
     video_feed = cv2.VideoCapture(video_path)
 
     frames = get_frames(video_path, number_of_frames)

@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class FacesPair:
     def __init__(self, face1, face2):
         self.face1 = face1

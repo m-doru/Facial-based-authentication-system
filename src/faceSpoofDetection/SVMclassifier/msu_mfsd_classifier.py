@@ -14,21 +14,29 @@ import feature_computer
 from plot_roc_curve import plot_roc_curve
 
 # pickels filenames
-extension = '.pkl'
-version = 'redchannel'
+extension = ".pkl"
+version = "redchannel"
+
 
 def get_train_features_and_labels(load_train_features, mlbp_feature_computer=None):
-    saved_realfaces_train_features_filename = '../featuresVectors/msu_mfsd_realfaces_features_joblib' + version + extension
-    saved_spooffaces_train_features_filename = '../featuresVectors/msu_mfsd_spooffaces_features_joblib' + version + extension
-
+    saved_realfaces_train_features_filename = (
+        "../featuresVectors/msu_mfsd_realfaces_features_joblib" + version + extension
+    )
+    saved_spooffaces_train_features_filename = (
+        "../featuresVectors/msu_mfsd_spooffaces_features_joblib" + version + extension
+    )
 
     if load_train_features == False:
         # compute feature vectors for every frame in the videos with real faces
-        real_features_train = dbfeatures.compute_face_features_msu_mfsd(mlbp_feature_computer, real=True)
+        real_features_train = dbfeatures.compute_face_features_msu_mfsd(
+            mlbp_feature_computer, real=True
+        )
         joblib.dump(real_features_train, saved_realfaces_train_features_filename)
 
         # compute feature vectors for every frame in the videos with spoof faces
-        spoof_features_train = dbfeatures.compute_face_features_msu_mfsd(mlbp_feature_computer, real=False)
+        spoof_features_train = dbfeatures.compute_face_features_msu_mfsd(
+            mlbp_feature_computer, real=False
+        )
         joblib.dump(spoof_features_train, saved_spooffaces_train_features_filename)
     elif load_train_features == True:
         real_features_train = joblib.load(saved_realfaces_train_features_filename)
@@ -45,15 +53,28 @@ def get_train_features_and_labels(load_train_features, mlbp_feature_computer=Non
 
     return (train_features, train_labels)
 
+
 def get_test_features_and_labels(load_test_features, mlbp_feature_computer=None):
-    saved_realfaces_test_features_filename = '../featuresVectors/msu_mfsd_realfaces_test_featues.joblib' + version + extension
-    saved_spooffaces_test_features_filename = '../featuresVectors/msu_mfsd_spooffaces_test_featues.joblib' + version + extension
+    saved_realfaces_test_features_filename = (
+        "../featuresVectors/msu_mfsd_realfaces_test_featues.joblib"
+        + version
+        + extension
+    )
+    saved_spooffaces_test_features_filename = (
+        "../featuresVectors/msu_mfsd_spooffaces_test_featues.joblib"
+        + version
+        + extension
+    )
 
     if load_test_features == False:
-        real_features_test = dbfeatures.compute_face_features_msu_mfsd(mlbp_feature_computer,train=False)
-        joblib.dump(real_features_test,saved_realfaces_test_features_filename)
+        real_features_test = dbfeatures.compute_face_features_msu_mfsd(
+            mlbp_feature_computer, train=False
+        )
+        joblib.dump(real_features_test, saved_realfaces_test_features_filename)
 
-        spoof_features_test = dbfeatures.compute_face_features_msu_mfsd(mlbp_feature_computer, real=False, train=False)
+        spoof_features_test = dbfeatures.compute_face_features_msu_mfsd(
+            mlbp_feature_computer, real=False, train=False
+        )
         joblib.dump(spoof_features_test, saved_spooffaces_test_features_filename)
     elif load_test_features == True:
         real_features_test = joblib.load(saved_realfaces_test_features_filename)
@@ -67,8 +88,9 @@ def get_test_features_and_labels(load_test_features, mlbp_feature_computer=None)
 
     return (test_features, test_labels)
 
+
 def main():
-    saved_classifier_filename = '../classifiers/msu_mfsd' + version + extension
+    saved_classifier_filename = "../classifiers/msu_mfsd" + version + extension
 
     # load or recompute train features. If none, the train features are not loaded into memory
     load_train_features = False
@@ -78,37 +100,51 @@ def main():
     load_test_features = False
 
     # descriptor computer
-    mlbp_feature_computer = feature_computer.FrameFeatureComputer(features.MultiScaleLocalBinaryPatterns((8,1), (8,2),
-                                                                                                         (16, 2)))
-    #mlbp_feature_computer = feature_computer.FrameFeatureComputer(features.LocalBinaryPatterns(8,1))
+    mlbp_feature_computer = feature_computer.FrameFeatureComputer(
+        features.MultiScaleLocalBinaryPatterns((8, 1), (8, 2), (16, 2))
+    )
+    # mlbp_feature_computer = feature_computer.FrameFeatureComputer(features.LocalBinaryPatterns(8,1))
 
-    (train_features, train_labels) = get_train_features_and_labels(load_train_features, mlbp_feature_computer)
+    (train_features, train_labels) = get_train_features_and_labels(
+        load_train_features, mlbp_feature_computer
+    )
 
     if not load_classifier:
-        '''
+        """
         param_grid = [
             {'C':[0.0001, 0.001, 0.01], 'kernel':['linear'], 'class_weight':['balanced', None]},
             {'C':[0.0001, 0.001, 0.01], 'kernel':['rbf'],'gamma':[0.0001, 0.001], 'class_weight':['balanced', None]}
         ]
-        '''
+        """
         # C = 0.0001, kernel=linear, class_weight=balanced
-        param_grid = {'C':[0.0001, 0.1, 1, 10], 'kernel':['linear'], 'class_weight':['balanced']}
-        clf = GridSearchCV(svm.SVC(verbose=True, probability=True), param_grid, verbose=True, n_jobs=4)
+        param_grid = {
+            "C": [0.0001, 0.1, 1, 10],
+            "kernel": ["linear"],
+            "class_weight": ["balanced"],
+        }
+        clf = GridSearchCV(
+            svm.SVC(verbose=True, probability=True), param_grid, verbose=True, n_jobs=4
+        )
 
-        #clf = svm.SVC(verbose=True, probability=True, C=0.0001, kernel='linear', class_weight='balanced')
-        #clf = svm.SVC(verbose=True, probability=True, C=0.001, kernel='rbf', gamma=0.001, class_weight='balanced')
+        # clf = svm.SVC(verbose=True, probability=True, C=0.0001, kernel='linear', class_weight='balanced')
+        # clf = svm.SVC(verbose=True, probability=True, C=0.001, kernel='rbf', gamma=0.001, class_weight='balanced')
         # C = 5.77218597038 gamma = 9.38268773999 class_weight = balanced  kernel = linear
-        clf = svm.SVC(verbose=True, probability=True, C=5.772185, gamma=9.3826877, class_weight='balanced',
-                      kernel='linear')
+        clf = svm.SVC(
+            verbose=True,
+            probability=True,
+            C=5.772185,
+            gamma=9.3826877,
+            class_weight="balanced",
+            kernel="linear",
+        )
 
-        #param_dist = {
+        # param_dist = {
         #    'C':sp_uniform(0.00001, 10), 'kernel':['rbf', 'linear'], 'gamma':sp_uniform(0.0001, 10),
         #    'class_weight':['balanced', None], 'decision_function_shape':['ovr', 'ovo']
-        #}
-        #n_iter_search = 20
-        #clf = RandomizedSearchCV(svm.SVC(verbose=True, probability=True), param_distributions=param_dist,
+        # }
+        # n_iter_search = 20
+        # clf = RandomizedSearchCV(svm.SVC(verbose=True, probability=True), param_distributions=param_dist,
         #                         n_iter=n_iter_search, n_jobs=4, verbose=True)
-
 
         clf.fit(train_features, train_labels)
 
@@ -119,9 +155,10 @@ def main():
     else:
         clf = joblib.load(saved_classifier_filename)
 
-
-    (test_features, test_labels) = get_test_features_and_labels(load_test_features, mlbp_feature_computer)
-    test_labels_bin = label_binarize(test_labels, classes=[-1,1])
+    (test_features, test_labels) = get_test_features_and_labels(
+        load_test_features, mlbp_feature_computer
+    )
+    test_labels_bin = label_binarize(test_labels, classes=[-1, 1])
 
     pred_labels = clf.predict(test_features)
 
@@ -129,20 +166,27 @@ def main():
 
     plot_roc_curve(test_labels_bin, pred_confidences)
 
-    from sklearn.metrics import roc_curve, accuracy_score,confusion_matrix, roc_auc_score, auc
+    from sklearn.metrics import (
+        roc_curve,
+        accuracy_score,
+        confusion_matrix,
+        roc_auc_score,
+        auc,
+    )
     from scipy.optimize import brentq
     from scipy.interpolate import interp1d
 
-    roc_auc = roc_auc_score(test_labels, pred_confidences[:,1])
-    print('ROC area under the curve score {}'.format(roc_auc))
+    roc_auc = roc_auc_score(test_labels, pred_confidences[:, 1])
+    print("ROC area under the curve score {}".format(roc_auc))
 
     # compute the equal error rate
-    fpr, tpr, _ = roc_curve(test_labels, pred_confidences[:,1])
-    eer = brentq(lambda x: 1. - x - interp1d(fpr, tpr)(x), 0., 1.)
-    print('Equal error rate {}'.format(eer))
+    fpr, tpr, _ = roc_curve(test_labels, pred_confidences[:, 1])
+    eer = brentq(lambda x: 1.0 - x - interp1d(fpr, tpr)(x), 0.0, 1.0)
+    print("Equal error rate {}".format(eer))
 
-    print('Accuracy score {}'.format(accuracy_score(test_labels, pred_labels)))
-    print('Confusion matrix {}'.format(confusion_matrix(test_labels, pred_labels)))
+    print("Accuracy score {}".format(accuracy_score(test_labels, pred_labels)))
+    print("Confusion matrix {}".format(confusion_matrix(test_labels, pred_labels)))
 
-if __name__=='__main__':
+
+if __name__ == "__main__":
     main()
