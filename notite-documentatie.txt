@@ -1,5 +1,0 @@
-capitole:
-facial recognition
-facial alignment 
-facial identification
-facial spoof validation

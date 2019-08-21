@@ -1,0 +1,8 @@
+ROC auc = 0.96
+Equal error rate = 0.09
+Accuracy score = 0.91
+Confusion matrix:
+[
+    5904 294
+    421 1679
+]
