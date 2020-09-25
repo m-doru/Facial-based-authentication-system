@@ -31,5 +31,5 @@ scikit-learn==0.17.1
 scipy==0.16.1
 six==1.10.0
 subprocess32==3.2.7
-tensorflow==1.15.2
+tensorflow==1.15.4
 toolz==0.8.2
